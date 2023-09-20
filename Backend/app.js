@@ -1,6 +1,10 @@
 const express = require('express')
 const app = express();
 const { BadRequestError, UnauthenticatedError } = require("./errors/index");
+const xlsx = require('xlsx')
+const bodyParser = require('body-parser')
+const multer = require('multer')
+const pool = require("./db")
 
 //dependencies
 require("dotenv").config();
@@ -20,6 +24,58 @@ app.use(express.json());
 app.use(helmet());
 app.use(cors());
 
+//excel upload
+app.use(bodyParser.urlencoded({extended: true}));
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public");
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage:multerStorage });
+
+//route for extracting data from excel and adding into database
+app.post("/api/v1/admin/addquestionsfromexcel/:examcode",upload.single('excel'),async(req,res)=>{
+  const {examcode} = req.params
+  const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
+  if(checkexamcode.rowCount == 0){
+    throw new BadRequestError("Please provide valid examcode");
+  }
+  const workbook = xlsx.readFile(`public/${req.file.originalname}`)
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]]
+  const range = xlsx.utils.decode_range(worksheet["!ref"])
+  for(let row = range.s.r+1;row<=range.e.r;++row){
+    let data = {}
+    for(let col = range.s.c;col<=range.e.c;++col){
+      let cell = worksheet[xlsx.utils.encode_cell({r:row,c:col})]
+      data[worksheet[xlsx.utils.encode_cell({r:0,c:col})].v] = cell.v
+      if(worksheet[xlsx.utils.encode_cell({r:0,c:col})].v == "number_of_options"){
+        let options = []
+        for(let i=1;i<=Number(cell.v);++i){
+          let value = worksheet[xlsx.utils.encode_cell({r:row,c:col+i})]
+          options.push(value.v)
+        }
+        data['options'] = options
+        break;
+      }
+    }
+    let options_str = 'array['
+    for(let i=0;i<data.number_of_options;++i){
+      options_str+=`'${data.options[i]}'`
+      if(i!=data.number_of_options-1){
+        options_str+=','
+      }
+    }
+    options_str+=']'
+    const response = await pool.query(`insert into questions(examcode,description,number_of_options,options,answer) values('${examcode}','${data.description}',${data.number_of_options},${options_str},${data.answer});`)
+  }
+  res.status(200).json({res:"Success"})
+})
 //routes admin
 app.use("/api/v1/admin", adminRouter);
 //routes student

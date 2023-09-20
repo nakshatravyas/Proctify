@@ -5,7 +5,8 @@ const pool = require('../db')
 require('dotenv').config()
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const e = require("express");
 
 //authentication owner
 const registerAdmin = async (req, res) => {
@@ -37,7 +38,6 @@ const forgotPasswordAdmin = async (req, res) => {
   }
   const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
   const owner = await pool.query(`update admin set otp = '${otp}' where email like '${email}';`)
-  console.log(owner)
   if (!owner) {
     throw new BadRequestError("Email does not exists");
   }
@@ -51,7 +51,7 @@ const forgotPasswordAdmin = async (req, res) => {
     },
     auth: {
       user: "proctorsih@gmail.com",
-      pass: "Shahkandarp@123",
+      pass: "opuueiosrtjuwntj",
     },
   });
 
@@ -104,7 +104,7 @@ const adminVerifyOTP = async (req, res) => {
   if (response.rowCount == 0) {
     throw new BadRequestError("Please provide valid Email");
   }
-  if (response.otp != Number(otp)) {
+  if (response.rows[0].otp != Number(otp)) {
     throw new BadRequestError("Please provide valid OTP");
   }
   res.status(StatusCodes.OK).json({ res: "Success" });
@@ -150,7 +150,7 @@ const createNewExam = async(req,res)=>{
 
 const createQuestions = async(req,res)=>{
   const {examcode,description,number_of_options,options,answer} = req.body
-  if(!examcode || !description || !number_of_options || !options || !answer){
+  if(!examcode || !description || !number_of_options || !options ){
     throw new BadRequestError("Please provide required details");
   }
   //checking whether examcode provided by the user is valid
@@ -162,8 +162,15 @@ const createQuestions = async(req,res)=>{
   if(number_of_options != options.length){
     throw new BadRequestError("Options size missmatch");
   }
-
-  const response = await pool.query(`insert into questions(examcode,image,description,number_of_options,options,answer) values('${examcode}','${req.body?.image}','${description}',${number_of_options},array[${[...options]}],${answer}) returning questionid;`)
+  let options_str = 'array['
+  for(let i=0;i<number_of_options;++i){
+    options_str+=`'${options[i]}'`
+    if(i!=number_of_options-1){
+      options_str+=','
+    }
+  }
+  options_str+=']'
+  const response = await pool.query(`insert into questions(examcode,image,description,number_of_options,options,answer) values('${examcode}','${req.body?.image}','${description}',${number_of_options},${options_str},${answer}) returning questionid;`)
   res.status(StatusCodes.OK).json({res:"Success",data:response.rows[0].questionid})
 }
 
@@ -218,7 +225,8 @@ const createFromExistingExam = async(req,res)=>{
 
 const getExamsCreatedByAdmin = async(req,res)=>{
   const {adminId} = req.user
-  const response = await pool.query(`select * from exam where adminid = ${adminId};`)
+  const {examcode} = req.query
+  const response = await pool.query(`select * from exam where adminid = ${adminId} and examcode like '%${examcode}%';`)
   res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
 }
 
@@ -264,7 +272,34 @@ const getExam = async(req,res)=>{
   res.status(StatusCodes.OK).json({res:"Success",data:response.rows[0]})
 }
 
+const setStudentThreshold = async(req,res)=>{
+  const {sid,examcode,system_warnings,mobile_detected,cv_based_warnings,noise_warnings} = req.body
+  if(!sid || !examcode || !system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings){
+    throw new BadRequestError("Please provide required details");
+  }
+  const response = await pool.query(`insert into student_threshold values(${sid},'${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings});`)
+  res.status(StatusCodes.OK).json({res:"Success"})
+}
 
+const getThresholdValueOfAllStudentsExamWise = async(req,res)=>{
+  const {examcode} = req.params
+  const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
+  if(checkexamcode.rowCount == 0){
+    throw new BadRequestError("Please provide valid examcode");
+  }
+  const response = await pool.query(`select s.name,t.system_warnings,t.mobile_detected,t.cv_based_warnings,t.noise_warnings from student as s inner join student_threshold as t on s.sid = t.sid where examcode = '${examcode}';`)
+  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+}
+
+const publishResult = async(req,res)=>{
+  const {examcode} = req.params
+  const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
+  if(checkexamcode.rowCount == 0){
+    throw new BadRequestError("Please provide valid examcode");
+  }
+  const response = await pool.query(`update exam set publish_result = true where examcode = '${examcode}';`)
+  res.status(StatusCodes.OK).json({res:"Success"})
+}
 
 module.exports = {
   forgotPasswordAdmin,
@@ -283,5 +318,8 @@ module.exports = {
   getQuestions,
   updateQuestion,
   deleteQuestion,
-  getExam
+  getExam,
+  setStudentThreshold,
+  getThresholdValueOfAllStudentsExamWise,
+  publishResult
 }
