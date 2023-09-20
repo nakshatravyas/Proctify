@@ -169,6 +169,7 @@ const getAllQuestionsBasedOnExam = async(req,res) => {
   for(let i=0;i<response.rows.length;++i){
     response.rows[i]['selectedoption'] = -1
   }
+  //if admin has selected random question then random questions will be send
   if(checkexamcode.rows[0].israndom){
     response.rows=shuffle(response.rows)
   }

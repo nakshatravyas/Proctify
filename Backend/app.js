@@ -39,7 +39,7 @@ const multerStorage = multer.diskStorage({
 
 const upload = multer({ storage:multerStorage });
 
-//route for extracting data from excel and adding into database
+//route for extracting questions from excel and adding into database
 app.post("/api/v1/admin/addquestionsfromexcel/:examcode",upload.single('excel'),async(req,res)=>{
   const {examcode} = req.params
   const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
@@ -53,9 +53,11 @@ app.post("/api/v1/admin/addquestionsfromexcel/:examcode",upload.single('excel'),
     let data = {}
     for(let col = range.s.c;col<=range.e.c;++col){
       let cell = worksheet[xlsx.utils.encode_cell({r:row,c:col})]
+      //in the below line for each cell it checks its heading and in object 'data' is does data[heading] = value at the cell whose heading we found
       data[worksheet[xlsx.utils.encode_cell({r:0,c:col})].v] = cell.v
       if(worksheet[xlsx.utils.encode_cell({r:0,c:col})].v == "number_of_options"){
         let options = []
+        //in the below code it iterates in the right cells of "number_of_options" field in excel according to the values present in "number_of_options" field and creates "options" array
         for(let i=1;i<=Number(cell.v);++i){
           let value = worksheet[xlsx.utils.encode_cell({r:row,c:col+i})]
           options.push(value.v)
@@ -64,6 +66,7 @@ app.post("/api/v1/admin/addquestionsfromexcel/:examcode",upload.single('excel'),
         break;
       }
     }
+    //below code simply pushes each row of excel i.e each question in database for the exam whose examcode is passed in paramter 
     let options_str = 'array['
     for(let i=0;i<data.number_of_options;++i){
       options_str+=`'${data.options[i]}'`
