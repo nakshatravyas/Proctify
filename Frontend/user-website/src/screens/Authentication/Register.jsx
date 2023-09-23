@@ -22,7 +22,7 @@ const Register = () => {
       console.log(response.data.token);
       localStorage.setItem("token", response.data.token);
       toast.success("Registration successful!");
-      navigate("/dashboard");
+      navigate("/verify");
     } catch (err) {
       console.log(err.response.data.msg);
       toast.error(err.response.data.msg);

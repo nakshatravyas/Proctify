@@ -228,7 +228,7 @@ const calculateResult = async (req, res) => {
 
 const getExamResults = async (req, res) => {
   const { studentId } = req.user
-  const response = await pool.query(`select r.totalmarks,e.exam_name,e.examcode,e.startdate from result as r inner join exam as e on r.examcode = e.examcode where r.sid = ${studentId} and e.publish_result=true;`)
+  const response = await pool.query(`select r.totalmarks,e.exam_name,e.examcode,e.startdate,e.publish_result from result as r inner join exam as e on r.examcode = e.examcode where r.sid = ${studentId} and e.publish_result=true;`)
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
