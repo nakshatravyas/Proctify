@@ -13,8 +13,8 @@ import Report from "../screens/Dashboard/Report";
 import ResetPassword from "../screens/Dashboard/ResetPassword";
 import Instructions from "../screens/Dashboard/Checking/Instructions";
 import PermissionCheck from "../screens/Dashboard/Checking/PermissionCheck";
-import VerifyProfile from "../screens/Authentication/VerifyProfile";
 import VerifyPhoto from "../screens/Dashboard/Checking/VerifyPhoto";
+import RegisterProfile from "../screens/Authentication/RegisterProfile";
 const App = () => {
   return (
     <BrowserRouter>
@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
-        <Route path="/verify" element={<VerifyProfile />} />
+        <Route path="/verify" element={<RegisterProfile />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard" element={<Exam />} />
         <Route path="/dashboard/exam/:id" element={<GiveExam />} />
