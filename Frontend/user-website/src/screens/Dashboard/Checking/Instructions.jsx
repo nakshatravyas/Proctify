@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Instructions = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [data, setData] = useState({});
   useEffect(() => {
     setData(location?.state);
   }, []);
+
   return (
     <main className="flex items-start select-none">
       <section className="w-full min-h-[100vh] mx-auto flex flex-col">
@@ -39,6 +41,14 @@ const Instructions = () => {
             and negative marks are {data.negative_marks}.
           </li>
         </ul>
+        <button
+          className="bg-blue-600 text-white px-6 py-2 rounded-md my-3 transition_fade hover:shadow-lg shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 bg-gradient-to-tr from-blue-600 to-blue-700 w-[12%] mx-auto mt-4"
+          onClick={() =>
+            navigate("/dashboard/checking", { state: location?.state })
+          }
+        >
+          Next Page
+        </button>
       </section>
     </main>
   );

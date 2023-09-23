@@ -7,7 +7,8 @@ import axios from "axios";
 const Exam = () => {
   const [examCode, setExamCode] = useState("");
   const [examData, setExamData] = useState();
-  const examCodeCheckHandler = async () => {
+  const examCodeCheckHandler = async (e) => {
+    e.preventDefault();
     if (examCode) {
       try {
         const token = localStorage.getItem("token");
@@ -32,23 +33,25 @@ const Exam = () => {
       <Sidebar />
       <section className="w-[80%] min-h-[90vh] flex justify-start items-center flex-col">
         <div className="flex justify-center items-stretch my-10 w-[40%]">
-          <input
-            className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-lg"
-            id="examcode"
-            type="text"
-            name="examcode"
-            value={examCode}
-            onChange={(e) => setExamCode(e.target.value)}
-            placeholder="Exam Code"
-            required
-          />
-          <button
-            className="bg-blue-600 text-white px-6 rounded-tr rounded-br transition_fade hover:shadow-lg shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 bg-gradient-to-tr from-blue-600 to-blue-700 flex justify-center items-center text-lg"
-            type="submit"
-            onClick={examCodeCheckHandler}
-          >
-            <Search size={22} />
-          </button>
+          <form onSubmit={examCodeCheckHandler} className="flex">
+            <input
+              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-lg"
+              id="examcode"
+              type="text"
+              name="examcode"
+              value={examCode}
+              onChange={(e) => setExamCode(e.target.value)}
+              placeholder="Exam Code"
+              required
+            />
+            <button
+              className="bg-blue-600 text-white px-6 rounded-tr rounded-br transition_fade hover:shadow-lg shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 bg-gradient-to-tr from-blue-600 to-blue-700 flex justify-center items-center text-lg"
+              type="submit"
+              onClick={examCodeCheckHandler}
+            >
+              <Search size={22} />
+            </button>
+          </form>
         </div>
         {examData && (
           <ExamShowCard
