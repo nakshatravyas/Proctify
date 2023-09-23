@@ -319,13 +319,14 @@ const calculateResult = async (req, res) => {
   const resultupdate = await pool.query(
     `insert into result values('${examcode}',${studentId},${marks});`
   );
+  // const deleteenrty = await pool.query(`delete from registered_exams where examcode like '${examcode}' and sid=${studentId};`)
   res.status(StatusCodes.OK).json({ res: "Success" });
 };
 
 const getExamResults = async (req, res) => {
   const { studentId } = req.user;
   const response = await pool.query(
-    `select r.totalmarks,e.exam_name,e.examcode,e.startdate,e.publish_result from result as r inner join exam as e on r.examcode = e.examcode where r.sid = ${studentId} and e.publish_result=true;`
+    `select r.totalmarks,e.exam_name,e.examcode,e.startdate,e.publish_result from result as r inner join exam as e on r.examcode = e.examcode where r.sid = ${studentId};`
   );
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows });
 };
@@ -414,6 +415,27 @@ const getExamDetails = async (req, res) => {
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows[0] });
 };
 
+const registerExam = async(req,res)=>{
+  const {studentId} = req.user
+  const {examcode} = req.params
+  const response = await pool.query(`insert into registered_exams values(${studentId},'${examcode}');`)
+  res.status(StatusCodes.OK).json({res:"Success"})
+}
+
+const getRegisteredExam = async(req,res)=>{
+  const {studentId} = req.user
+  let yourDate = new Date();
+  const response = await pool.query(`select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${yourDate.toISOString().split("T")[0]}';`)
+  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+}
+
+const getAllExams = async(req,res)=>{
+  const {studentId} = req.user
+  let yourDate = new Date();
+  const response = await pool.query(`select * from exam as e full outer join registered_exams as r on e.examcode = r.examcode where e.startdate>='${yourDate.toISOString().split("T")[0]}' and r.sid!=${studentId} ;`)
+  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+}
+
 module.exports = {
   forgotPasswordStudent,
   loginStudent,
@@ -432,4 +454,7 @@ module.exports = {
   createCollection,
   faceLogin,
   faceRegister,
+  registerExam,
+  getRegisteredExam,
+  getAllExams
 };
