@@ -13,7 +13,7 @@ require('dotenv').config()
 
 //utility
 function shuffle(array) {
-  let currentIndex = array.length,  randomIndex;
+  let currentIndex = array.length, randomIndex;
 
   // While there remain elements to shuffle.
   while (currentIndex > 0) {
@@ -32,17 +32,17 @@ function shuffle(array) {
 
 //authentication user
 const registerStudent = async (req, res) => {
-  let { name, email, password,phoneno } = req.body;
+  let { name, email, password, phoneno } = req.body;
   if (!email || !name || !password || !phoneno) {
     throw new BadRequestError("Please provide necessary credentials");
   }
   const ownerx = await pool.query(`Select * from student where email like '${email}';`)
-  if (ownerx.rowCount>0) {
+  if (ownerx.rowCount > 0) {
     throw new BadRequestError("This Email already Exists");
   }
   const salt = await bcrypt.genSalt(10);
   password = await bcrypt.hash(password, salt);
-  const response = await pool.query(`insert into student(name,email,password,phoneno) values ('${name}','${email}','${password}','${phoneno}') returning sid;`) 
+  const response = await pool.query(`insert into student(name,email,password,phoneno) values ('${name}','${email}','${password}','${phoneno}') returning sid;`)
   const token = jwt.sign(
     { sid: response.rows[0].sid },
     process.env.JWT_SECRET_STUDENT,
@@ -100,11 +100,11 @@ const loginStudent = async (req, res) => {
     throw new BadRequestError("Please provide email and password");
   }
   const response = await pool.query(`select * from student where email like '${email}';`)
-  if(response.rowCount == 0){
+  if (response.rowCount == 0) {
     throw new BadRequestError("Please provide valid credentials");
   }
   const isPasswordCorrect = await bcrypt.compare(password, response.rows[0].password);
-  if(!isPasswordCorrect){
+  if (!isPasswordCorrect) {
     throw new BadRequestError("Please provide valid credentials");
   }
   const token = jwt.sign(
@@ -132,9 +132,9 @@ const studentVerifyOTP = async (req, res) => {
   res.status(StatusCodes.OK).json({ res: "Success" });
 };
 
-const changeStudentPassword = async(req,res)=>{
-  let {email,password} = req.body
-  if(!password || !email){
+const changeStudentPassword = async (req, res) => {
+  let { email, password } = req.body
+  if (!password || !email) {
     throw new BadRequestError("Please provide required credentials");
   }
   const salt = await bcrypt.genSalt(10);
@@ -143,44 +143,44 @@ const changeStudentPassword = async(req,res)=>{
   res.status(StatusCodes.OK).json({ res: "Success" });
 }
 
-const getStudentDetails = async(req,res)=>{
-  const {studentId} = req.user
+const getStudentDetails = async (req, res) => {
+  const { studentId } = req.user
   const response = await pool.query(`select sid,email,name,phoneno from student where sid = ${studentId}`)
-  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
-const updateStudentDetails = async(req,res)=>{
-  const {email,phoneno,name} = req.body
-  const {studentId} = req.user
-  if(!email || !phoneno || !name){
+const updateStudentDetails = async (req, res) => {
+  const { email, phoneno, name } = req.body
+  const { studentId } = req.user
+  if (!email || !phoneno || !name) {
     throw new BadRequestError("Please provide required credentials");
   }
   const response = await pool.query(`update student set email = '${email}',phoneno='${phoneno}',name='${name}' where sid=${studentId};`);
-  res.status(StatusCodes.OK).json({res:"Success"})
+  res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
-const getAllQuestionsBasedOnExam = async(req,res) => {
-  const {examcode} = req.params
+const getAllQuestionsBasedOnExam = async (req, res) => {
+  const { examcode } = req.params
   const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
-  if(checkexamcode.rowCount == 0){
+  if (checkexamcode.rowCount == 0) {
     throw new BadRequestError("Please provide valid examcode");
   }
   const response = await pool.query(`select * from questions where examcode = '${examcode}';`)
-  for(let i=0;i<response.rows.length;++i){
+  for (let i = 0; i < response.rows.length; ++i) {
     response.rows[i]['selectedoption'] = -1
   }
   //if admin has selected random question then random questions will be send
-  if(checkexamcode.rows[0].israndom){
-    response.rows=shuffle(response.rows)
+  if (checkexamcode.rows[0].israndom) {
+    response.rows = shuffle(response.rows)
   }
-  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
-const canGiveExam = async(req,res)=>{
-  const {examcode} = req.params
-  const {studentId} = req.user
+const canGiveExam = async (req, res) => {
+  const { examcode } = req.params
+  const { studentId } = req.user
   const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
-  if(checkexamcode.rowCount == 0){
+  if (checkexamcode.rowCount == 0) {
     throw new BadRequestError("Please provide valid examcode");
   }
   let yourDate = new Date()
@@ -189,54 +189,54 @@ const canGiveExam = async(req,res)=>{
   const hours = yourDate.getHours().toString().padStart(2, '0');
   const minutes = yourDate.getMinutes().toString().padStart(2, '0');
   const seconds = yourDate.getSeconds().toString().padStart(2, '0');
-  
+
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
   const response = await pool.query(`select * from exam where startdate = '${yourDate.toISOString().split('T')[0]}' and starttime<='${currentTime}' and endtime>='${currentTime}';`)
-  if(response.rowCount == 0){
+  if (response.rowCount == 0) {
     throw new BadRequestError("Check the exam schedule and try again");
   }
   const studentappeared = await pool.query(`select * from result where sid = ${studentId};`)
-  if(studentappeared.rowCount==1){
+  if (studentappeared.rowCount == 1) {
     throw new BadRequestError("You have already attempted this test.");
   }
-  res.status(StatusCodes.OK).json({res:"Success"})
+  res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
-const calculateResult = async(req,res)=>{
-  const {studentId} = req.user
-  const {data} = req.body
+const calculateResult = async (req, res) => {
+  const { studentId } = req.user
+  const { data } = req.body
   const examcode = data[0].examcode
   const response = await pool.query(`select * from exam where examcode like '${examcode}';`)
   let negativemarks = response.rows[0].negative_marks
   let questionweightage = response.rows[0].question_weightage
-  let marks=0
-  for(let i=0;i<data.length;++i){
-    if(data[i].answer == data[i].selectedoption){
-      marks+=questionweightage
+  let marks = 0
+  for (let i = 0; i < data.length; ++i) {
+    if (data[i].answer == data[i].selectedoption) {
+      marks += questionweightage
     }
-    else if(data[i].selectedoption == -1){
-      marks+=0
+    else if (data[i].selectedoption == -1) {
+      marks += 0
     }
-    else{
-      marks-=negativemarks
+    else {
+      marks -= negativemarks
     }
   }
   const resultupdate = await pool.query(`insert into result values('${examcode}',${studentId},${marks});`)
-  res.status(StatusCodes.OK).json({res:"Success"})
+  res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
-const getExamResults = async (req,res) =>{
-  const {studentId} = req.user
+const getExamResults = async (req, res) => {
+  const { studentId } = req.user
   const response = await pool.query(`select r.totalmarks,e.exam_name,e.examcode,e.startdate from result as r inner join exam as e on r.examcode = e.examcode where r.sid = ${studentId} and e.publish_result=true;`)
-  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
-const getSpecificExamResult = async(req,res)=>{
-  const {studentId} = req.user
-  const {examcode} = req.params
+const getSpecificExamResult = async (req, res) => {
+  const { studentId } = req.user
+  const { examcode } = req.params
   const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
-  if(checkexamcode.rowCount == 0){
+  if (checkexamcode.rowCount == 0) {
     throw new BadRequestError("Please provide valid examcode");
   }
   const response = await pool.query(`select max(totalmarks),min(totalmarks),avg(totalmarks),count(totalmarks) from result group by examcode having examcode='${examcode}';`)
@@ -255,12 +255,12 @@ const getSpecificExamResult = async(req,res)=>{
   // let percentile = (index / Number(response.rows[0].count))*100
   // console.log(percentile_calc.rows)
   // console.log(percentile)
-  res.status(StatusCodes.OK).json({res:"Success",data:{max:response.rows[0].max,min:response.rows[0].min,avg:response.rows[0].avg,count:response.rows[0].count,marks:user_marks}})
+  res.status(StatusCodes.OK).json({ res: "Success", data: { max: response.rows[0].max, min: response.rows[0].min, avg: response.rows[0].avg, count: response.rows[0].count, marks: user_marks } })
 }
 
-const reportProblem = async(req,res)=>{
-  const {studentId} = req.user
-  const {description} = req.body
+const reportProblem = async (req, res) => {
+  const { studentId } = req.user
+  const { description } = req.body
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", // hostname
     secureConnection: false, // TLS requires secureConnection to be false
@@ -287,8 +287,14 @@ const reportProblem = async(req,res)=>{
       return console.log(error);
     }
 
-    res.status(StatusCodes.OK).json({ res:"Success" });
+    res.status(StatusCodes.OK).json({ res: "Success" });
   });
+}
+
+const getExamDetails = async (req, res) => {
+  const { examcode } = req.params
+  const response = await pool.query(`select * from exam where examcode like '${examcode}';`)
+  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows[0] })
 }
 
 module.exports = {
@@ -304,5 +310,6 @@ module.exports = {
   calculateResult,
   getExamResults,
   getSpecificExamResult,
-  reportProblem
+  reportProblem,
+  getExamDetails
 }
