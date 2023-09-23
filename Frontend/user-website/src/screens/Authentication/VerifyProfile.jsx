@@ -1,6 +1,7 @@
 import React, { useRef, useCallback } from "react";
 import Webcam from "react-webcam";
-import axios from 'axios';
+import axios from "axios";
+
 const VerifyProfile = () => {
   const webcamRef = useRef(null);
   const [imageBase64Data, setImageBase64Data] = useState("");

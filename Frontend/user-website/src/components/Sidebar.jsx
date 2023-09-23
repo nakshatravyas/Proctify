@@ -11,7 +11,7 @@ const Sidebar = () => {
     {
       id: 1,
       title: "Give Exams",
-      route: "/dashboard/exam",
+      route: "/dashboard/",
     },
     {
       id: 2,
