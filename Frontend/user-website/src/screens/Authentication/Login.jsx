@@ -23,11 +23,12 @@ const Login = () => {
       navigate("/dashboard");
     } catch (err) {
       console.log(err.response.data.msg);
+      toast.error(err.response.data.msg);
     }
-    if (!data.email || !data.password) {
-      toast.error("Email and password are required");
-      return;
-    }
+    // if (!data.email || !data.password) {
+    //   toast.error("Email and password are required");
+    //   return;
+    // }
     setData({
       email: "",
       password: "",
