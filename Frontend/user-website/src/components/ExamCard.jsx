@@ -32,7 +32,7 @@ const ExamCard = (props) => {
               className="w-12"
               loop
               autoplay
-              speed={4}
+              speed={10}
             />
           </span>
           12:00

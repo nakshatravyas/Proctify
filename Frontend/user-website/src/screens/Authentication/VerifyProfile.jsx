@@ -1,7 +1,7 @@
 import React, { useRef, useCallback } from "react";
 import Webcam from "react-webcam";
 
-const Verify = () => {
+const VerifyProfile = () => {
   const webcamRef = useRef(null);
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -23,4 +23,4 @@ const Verify = () => {
   );
 };
 
-export default Verify;
+export default VerifyProfile;
