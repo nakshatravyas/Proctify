@@ -4,11 +4,14 @@ import { Search } from "lucide-react";
 import toast from "react-hot-toast";
 import ExamShowCard from "../../components/ExamShowCard";
 import axios from "axios";
+import { Oval } from "react-loader-spinner";
 const Exam = () => {
   const [examCode, setExamCode] = useState("");
   const [examData, setExamData] = useState();
+  const [loading, setLoading] = useState(false);
   const examCodeCheckHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (examCode) {
       try {
         const token = localStorage.getItem("token");
@@ -21,9 +24,10 @@ const Exam = () => {
           }
         );
         setExamData(response.data.data);
-        console.log(response.data.data);
-        toast.success("");
+        setLoading(false);
+        setExamCode("");
       } catch (error) {
+        setLoading(false);
         toast.error(error);
       }
     }
@@ -33,7 +37,7 @@ const Exam = () => {
       <Sidebar />
       <section className="w-[80%] min-h-[90vh] flex justify-start items-center flex-col">
         <div className="flex justify-center items-stretch my-10 w-[40%]">
-          <form onSubmit={examCodeCheckHandler} className="flex">
+          <form className="flex">
             <input
               className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-lg"
               id="examcode"
@@ -49,11 +53,26 @@ const Exam = () => {
               type="submit"
               onClick={examCodeCheckHandler}
             >
-              <Search size={22} />
+              {loading && (
+                <Oval
+                  height={20}
+                  width={20}
+                  color="white"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                  ariaLabel="oval-loading"
+                  secondaryColor="white"
+                  strokeWidth={4}
+                  strokeWidthSecondary={4}
+                />
+              )}
+              {!loading && <Search size={22} />}
             </button>
           </form>
         </div>
-        {examData && (
+
+        {!loading && examData && (
           <ExamShowCard
             data={{
               code: examData.examcode,

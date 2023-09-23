@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const ExamShowCard = (props) => {
   const navigate = useNavigate();
   return (
-    <div className="w-[85%] bg-white shadow-md border rounded-md p-4 flex justify-between items-end cursor-pointer">
+    <div className="w-[85%] bg-white shadow-md border rounded-md p-4 flex justify-between items-end cursor-pointer mb-5">
       <div>
         <p className="font-semibold mb-1 text-lg">
           {props.data.code} - {props.data.name}

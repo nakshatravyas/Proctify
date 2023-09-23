@@ -10,7 +10,7 @@ const bcrypt = require("bcryptjs");
 const pool = require("../db");
 const e = require("express");
 require("dotenv").config();
-const AWS = require("../aws-config");
+const AWS = require("../aws-config.js");
 const rekognition = new AWS.Rekognition();
 const { matchFaceWithRekognitionCollection } = require("../utils/rekognition");
 const { uploadImageToS3 } = require("../utils/s3");
@@ -102,14 +102,16 @@ const faceLogin = async (req, res) => {
 };
 const faceRegister = async (req, res) => {
   const { studentId } = req.user;
+  const { imageBase64Data } = req.body;
+  // console.log(imageBase64Data);
+  console.log(studentId);
   try {
-    const { imageBase64Data } = req.body;
 
     // Upload image to S3
-    const imageUrl = await uploadImageToS3(studentId, imageBase64Data);
+    const imageUrl = await uploadImageToS3(JSON.stringify(studentId), String(imageBase64Data));
 
     // Register face with Rekognition
-    await registerFaceWithRekognition(studentId, imageUrl);
+    await registerFaceWithRekognition(JSON.stringify(studentId), imageUrl);
 
     // Store user data in DynamoDB
     // await createUserInDynamoDB(userId, imageUrl);
@@ -281,8 +283,7 @@ const canGiveExam = async (req, res) => {
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
   const response = await pool.query(
-    `select * from exam where startdate = '${
-      yourDate.toISOString().split("T")[0]
+    `select * from exam where startdate = '${yourDate.toISOString().split("T")[0]
     }' and starttime<='${currentTime}' and endtime>='${currentTime}';`
   );
   if (response.rowCount == 0) {

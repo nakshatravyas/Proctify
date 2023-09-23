@@ -4,21 +4,16 @@ import toast from "react-hot-toast";
 
 const Login = () => {
   const [data, setData] = useState({
-    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!data.email) {
-      toast.error("Email is required");
+    if (data.password !== data.confirmPassword) {
+      toast.error("Both Password Should Be Same!");
       return;
     }
-
-    toast.success("Login successful!");
-
-    setData({
-      email: "",
-    });
   };
 
   const setValueHandler = (e) => {
@@ -28,22 +23,39 @@ const Login = () => {
   return (
     <section className="flex justify-center min-h-[90vh] items-center w-full bg-blue-50">
       <div className="my-10 w-[40%] bg-white flex justify-center items-center flex-col py-6 px-5 shadow-md rounded-md">
-        <p className="text-2xl font-semibold my-6">Reset Password</p>
+        <p className="text-2xl font-semibold my-6">Set New Password</p>
         <div className="w-full">
           <form className="bg-white px-8 mb-4">
             <div className="mb-4">
               <label
                 className="block text-gray-700 text-sm font-semibold mb-2"
-                htmlFor="email"
+                htmlFor="password"
               >
-                Email
+                New Password
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email"
-                type="email"
-                name="email"
-                value={data.email}
+                id="password"
+                type="password"
+                name="password"
+                value={data.password}
+                onChange={setValueHandler}
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-gray-700 text-sm font-semibold mb-2"
+                htmlFor="confirmPassword"
+              >
+                Confirm Password
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="confirmPassword"
+                type="password"
+                name="confirmPassword"
+                value={data.confirmPassword}
                 onChange={setValueHandler}
                 required
               />
@@ -54,14 +66,9 @@ const Login = () => {
                 type="submit"
                 onClick={handleSubmit}
               >
-                Send Reset Link
+                Change Password
               </button>
             </div>
-            <Link to={"/"}>
-              <p className="text-sm hover:underline cursor-pointer mt-3 flex justify-center items-center">
-                Remembered the Password?
-              </p>
-            </Link>
           </form>
         </div>
       </div>
