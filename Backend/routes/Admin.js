@@ -22,6 +22,7 @@ const {
   setStudentThreshold,
   getThresholdValueOfAllStudentsExamWise,
   publishResult,
+  getExamsByAdmin
 } = require("../controllers/Admin");
 
 const adminMiddleware = require("../middleware/authentication_admin");
@@ -50,7 +51,7 @@ router.route("/createquestion").post(adminMiddleware, createQuestions);
 router.route("/setthreshold").post(adminMiddleware, setThreshold);
 router.route("/getthreshold/:examcode").get(adminMiddleware, getThreshold);
 
-//get exam created by particular admin - pass examcode after ? in url eg: localhost:3002/api/v1/admin/getexams?examcode=b
+//get exam created by particular admin - pass examcode after ? in url eg: localhost:3002/api/v1/admin/getexams?examcode=b it will return only examcode in array
 router.route("/getexams").get(adminMiddleware, getExamsCreatedByAdmin);
 
 //get all the questions of a particular exam and update or delete any particular question
@@ -73,5 +74,8 @@ router
 
 //publish result
 router.route("/publishresult/:examcode").get(adminMiddleware, publishResult);
+
+//get exam created by particular admin - it will return array of object
+router.route("/getallexams").get(adminMiddleware,getExamsByAdmin)
 
 module.exports = router;

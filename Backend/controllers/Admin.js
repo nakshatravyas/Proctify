@@ -306,6 +306,12 @@ const publishResult = async(req,res)=>{
   res.status(StatusCodes.OK).json({res:"Success"})
 }
 
+const getExamsByAdmin = async(req,res)=>{
+  const {adminId} = req.user
+  const response = await pool.query(`select * from exam where adminid = ${adminId};`)
+  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+}
+
 module.exports = {
   forgotPasswordAdmin,
   loginAdmin,
@@ -326,5 +332,6 @@ module.exports = {
   getExam,
   setStudentThreshold,
   getThresholdValueOfAllStudentsExamWise,
-  publishResult
+  publishResult,
+  getExamsByAdmin
 }
