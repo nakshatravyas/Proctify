@@ -140,12 +140,13 @@ const forgotPasswordStudent = async (req, res) => {
     throw new BadRequestError("Please provide email");
   }
   const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
+  const check = await pool.query(`select * from student where email like '${email}';`)
+  if (check.rowCount == 0) {
+    throw new BadRequestError("Email does not exists");
+  }
   const owner = await pool.query(
     `update student set otp = '${otp}' where email like '${email}';`
   );
-  if (!owner) {
-    throw new BadRequestError("Email does not exists");
-  }
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", // hostname

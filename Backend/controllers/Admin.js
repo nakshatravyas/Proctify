@@ -37,10 +37,11 @@ const forgotPasswordAdmin = async (req, res) => {
     throw new BadRequestError("Please provide email");
   }
   const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
-  const owner = await pool.query(`update admin set otp = '${otp}' where email like '${email}';`)
-  if (!owner) {
+  const check = await pool.query(`select * from admin where email like '${email}';`)
+  if (check.rowCount == 0) {
     throw new BadRequestError("Email does not exists");
   }
+  const owner = await pool.query(`update admin set otp = '${otp}' where email like '${email}';`)
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", // hostname
@@ -224,10 +225,14 @@ const createFromExistingExam = async(req,res)=>{
 }
 
 const getExamsCreatedByAdmin = async(req,res)=>{
-  const {adminId} = req.user
-  const {examcode} = req.query
+  const { adminId } = req.user
+  const { examcode } = req.query
   const response = await pool.query(`select * from exam where adminid = ${adminId} and examcode like '%${examcode}%';`)
-  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+  const examcodesearch = []
+  for (let i = 0; i < response.rowCount; ++i) {
+    examcodesearch.push(response.rows[i].examcode)
+  }
+  res.status(StatusCodes.OK).json({ res: "Success", data: examcodesearch })
 }
 
 const getQuestions = async(req,res)=>{
