@@ -1,12 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ExamCard from "../../components/ExamCard";
+import RecordRTC from 'recordrtc';
+import toast from "react-hot-toast";
 
 const GiveExam = () => {
   const router = useLocation();
   const [isFullScreen, setFullScreen] = useState(false);
+ const [recording, setRecording] = useState(false);
+  const [stream, setStream] = useState(null);
+  const [recordedVideo, setRecordedVideo] = useState(null);
 
+  const recorderRef = useRef(null);
+
+  const startRecording = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ screen: true });
+    console.log(stream)
+    const recorder = new RecordRTC(stream, {
+      type: 'video',
+      mimeType: 'video/webm',
+    });
+    recorder.startRecording();
+    recorderRef.current = recorder;
+    setRecording(true);
+    setStream(stream);
+  } catch (error) {
+    toast.error("Screen Permission Is Necessary")
+    startRecording()
+    }
+};
+
+  
   useEffect(() => {
+    //startRecording()
     const blockShortcuts = (event) => {
       if (
         (event.ctrlKey || event.metaKey) &&

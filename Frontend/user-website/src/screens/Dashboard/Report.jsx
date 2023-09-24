@@ -1,25 +1,35 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import Sidebar from "../../components/Sidebar";
-
+import axios from "axios";
 const Report = () => {
-  const [data, setData] = useState({
-    email: "",
-    problem: "",
-  });
+  const [data, setData] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    if (!data.email || !data.problem) {
+    if (!data) {
       toast.dismiss();
       toast.error("Enter All Fields");
       return;
     }
-    toast.success("Problem Submitted Successful!");
-    setData({
-      email: "",
-      problem: "",
-    });
+    const token = localStorage.getItem('token');
+     try {
+      // console.log('examcode:',examcode);
+      console.log(data);
+      const response = await axios.post(
+        `http://127.0.0.1:3002/api/v1/student/reportproblem`, {description:data},{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data);
+      toast.success("Problem Submitted Successful!");
+    } catch (err) {
+      console.log(err.response.data.msg);
+      toast.error(err.response.data.msg);
+    }
+    setData('');
   };
 
   const setValueHandler = (e) => {
@@ -34,23 +44,7 @@ const Report = () => {
           <p className="text-2xl font-semibold my-3">Report A Problem</p>
           <div className="w-full">
             <form className=" px-8 pt-6 mb-4">
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-semibold mb-2"
-                  htmlFor="email"
-                >
-                  Email
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={data.email}
-                  onChange={setValueHandler}
-                  required
-                />
-              </div>
+              
               <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-semibold mb-2"
@@ -63,6 +57,10 @@ const Report = () => {
                   id="problem"
                   rows="4"
                   className="shadow appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none text-sm"
+                  value={data}
+                  onChange={(e) => setData(e.target.value)}
+                  placeholder="Explain problem"
+                  required
                 ></textarea>
               </div>
 

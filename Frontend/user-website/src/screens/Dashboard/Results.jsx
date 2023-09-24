@@ -1,9 +1,82 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import ResultShowCard from "../../components/ResultShowCard";
 import { X } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
 const Result = () => {
   const [active, setActive] = useState(false);
+  const [result,setResult] = useState([]);
+  const [details,setDetails] = useState({
+      name:"",
+      code:"",
+      marks:"",
+      average:"",
+      maxmarks:"",
+      minmarks:""
+    })
+  useEffect(()=> {
+    handleSubmit();
+  },[])
+    const handleSubmit = async () => {
+    const token =  localStorage.getItem('token');
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:3002/api/v1/student/getresult`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data.data);
+      setResult(response.data.data);
+      // localStorage.setItem("token", response.data.token);
+      // toast.success("Login successful!");
+      // navigate("/dashboard");
+    } catch (err) {
+      console.log(err.response.data.msg);
+      toast.error(err.response.data.msg);
+    }
+    // if (!data.email || !data.password) {
+    //   toast.error("Email and password are required");
+    //   return;
+    // }
+    // setData({
+    //   email: "",
+    //   password: "",
+    // });
+  };
+  const handleClick = async(exam_name,examcode)=>{
+    setActive(true)
+    const token =  localStorage.getItem('token');
+    let response;
+    try {
+      // console.log('examcode:',examcode);
+      response = await axios.get(
+        `http://127.0.0.1:3002/api/v1/student/getexamresult/${examcode}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data.data);
+      // setResult(response.data.data);
+      // localStorage.setItem("token", response.data.token);
+      // toast.success("Login successful!");
+      // navigate("/dashboard");
+    } catch (err) {
+      console.log(err.response.data.msg);
+      toast.error(err.response.data.msg);
+    }
+    setDetails({
+      name:exam_name,
+      code:examcode,
+      marks:response.data.data.marks,
+      average:response.data.data.avg,
+      maxmarks:response.data.data.max,
+      minmarks:response.data.data.min
+    })
+  }
   return (
     <main className="flex items-start">
       <Sidebar />
@@ -25,26 +98,47 @@ const Result = () => {
                 </tr>
                 <tr>
                   <td class="p-2 border">Subject</td>
-                  <td class="p-2 border">Web Development With ReactJs</td>
+                  <td class="p-2 border">{details.name}</td>
                 </tr>
                 <tr>
                   <td class="p-2 border">Code</td>
-                  <td class="p-2 border">11239r3</td>
+                  <td class="p-2 border">{details.code}</td>
                 </tr>
                 <tr>
                   <td class="p-2 border">Marks</td>
-                  <td class="p-2 border">180/200</td>
+                  <td class="p-2 border">{details.marks}</td>
                 </tr>
                 <tr>
                   <td class="p-2 border">Average</td>
-                  <td class="p-2 border">120</td>
+                  <td class="p-2 border">{details.average}</td>
                 </tr>
+                <tr>
+                  <td class="p-2 border">Min Marks</td>
+                  <td class="p-2 border">{details.minmarks}</td>
+                </tr>
+                <tr>
+                  <td class="p-2 border">Max Marks</td>
+                  <td class="p-2 border">{details.maxmarks}</td>
+                </tr>
+              
               </table>
             </div>
           </div>
         )}
         <div className="w-full grid gap-y-5 place-items-center">
-          <ResultShowCard
+          {result.map((res)=>{
+            return (<ResultShowCard
+            key={res.exam_name}
+            onClick={()=>handleClick(res.exam_name,res.examcode)}
+            data={{
+              code: res.examcode,
+              name: res.exam_name,
+              date: res.startdate.split("T")[0],
+              published: res.publish_result,
+            }}
+          />)
+          })}
+          {/* <ResultShowCard
             onClick={() => setActive(true)}
             data={{
               code: "11239r3",
@@ -64,7 +158,7 @@ const Result = () => {
               time: "9:30 AM",
               published: false,
             }}
-          />
+          /> */}
         </div>
       </section>
     </main>

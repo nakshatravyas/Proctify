@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useRef, useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
+import toast from "react-hot-toast";
 
 const VerifyPhoto = () => {
   const location = useLocation();
@@ -42,6 +43,8 @@ const VerifyPhoto = () => {
       // });
     } catch (error) {
       console.error("Registration error:", error.response.data.msg);
+      toast.error(error.response.data.msg)
+
     }
   };
   return (
