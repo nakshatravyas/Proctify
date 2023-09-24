@@ -1,25 +1,34 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
+import axios from "axios";
 const Login = () => {
   const [data, setData] = useState({
     email: "",
   });
-
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!data.email) {
+      if (!data.email) {
       toast.error("Email is required");
       return;
     }
-
-    toast.success("Login successful!");
-
-    setData({
+    try {
+      const response = await axios.patch(
+        `http://127.0.0.1:3002/api/v1/student/forgotpassword`,
+        data
+        );
+        toast.success("Email sent!");
+        navigate("/verify-otp",{state:{email:data.email}});
+      } catch (err) {
+        console.log(err.response.data.msg);
+        toast.error(err.response.data.msg);
+      }
+     setData({
       email: "",
     });
   };
+  
 
   const setValueHandler = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });

@@ -1,19 +1,36 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate,useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-
+import axios from "axios";
 const Login = () => {
   const [data, setData] = useState({
     password: "",
     confirmPassword: "",
   });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const {email} =  location.state || {}; 
 
-  const handleSubmit = (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
     if (data.password !== data.confirmPassword) {
       toast.error("Both Password Should Be Same!");
       return;
     }
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:3002/api/v1/student/changepassword`,
+        {email:email,password:data.password}
+        );
+        toast.success("Password changed!");
+        navigate("/");
+      } catch (err) {
+        console.log(err.response.data.msg);
+        toast.error(err.response.data.msg);
+      }
+     setData({
+      email: "",
+    });
   };
 
   const setValueHandler = (e) => {

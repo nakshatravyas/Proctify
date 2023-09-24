@@ -1,16 +1,34 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState} from "react";
+import { Link,useNavigate,useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-
+import axios from "axios";
 const VerifyOtp = () => {
+  const location = useLocation();
+  const {email} = location.state || {};
   const [data, setData] = useState({
+    email:email,
     otp: undefined,
   });
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+    const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setData({
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:3002/api/v1/student/verifyotp`,
+        data
+      );
+      toast.success("OTP Verified!");
+      navigate("/change-password",{state:{email:email}});
+    } catch (err) {
+      console.log(err.response.data.msg);
+      toast.error(err.response.data.msg);
+    }
+    // if (!data.email || !data.password) {
+    //   toast.error("Email and password are required");
+    //   return;
+    // }
+     setData({
       otp: "",
     });
   };
