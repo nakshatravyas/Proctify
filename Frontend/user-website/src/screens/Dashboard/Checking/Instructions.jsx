@@ -4,9 +4,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 const Instructions = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const [data, setData] = useState({});
   useEffect(() => {
-    setData(location?.state);
+    if (location.state) {
+      setData(location?.state);
+    } else {
+      navigate("/dashboard");
+    }
   }, []);
 
   return (

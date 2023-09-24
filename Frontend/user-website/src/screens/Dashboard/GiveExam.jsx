@@ -6,19 +6,6 @@ const GiveExam = () => {
   const router = useLocation();
   const [isFullScreen, setFullScreen] = useState(false);
 
-  const toggleFullScreen = () => {
-    if (document.fullscreenEnabled) {
-      if (isFullScreen) {
-        document.exitFullscreen();
-      } else {
-        document.documentElement.requestFullscreen().catch((err) => {
-          console.error("Error attempting to enable full screen:", err);
-        });
-      }
-      setFullScreen(!isFullScreen);
-    }
-  };
-
   useEffect(() => {
     const blockShortcuts = (event) => {
       if (

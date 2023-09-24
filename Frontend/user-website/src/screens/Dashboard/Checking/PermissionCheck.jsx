@@ -14,43 +14,49 @@ const PermissionCheck = () => {
   });
 
   useEffect(() => {
-    navigator.permissions.query({ name: "camera" }).then((cameraPermission) => {
-      setPermissionCheck((prevPermissions) => ({
-        ...prevPermissions,
-        video: cameraPermission.state === "granted",
-      }));
-    });
-    navigator.permissions
-      .query({ name: "microphone" })
-      .then((audioPermission) => {
+    if (location.state) {
+      navigator.permissions
+        .query({ name: "camera" })
+        .then((cameraPermission) => {
+          setPermissionCheck((prevPermissions) => ({
+            ...prevPermissions,
+            video: cameraPermission.state === "granted",
+          }));
+        });
+      navigator.permissions
+        .query({ name: "microphone" })
+        .then((audioPermission) => {
+          setPermissionCheck((prevPermissions) => ({
+            ...prevPermissions,
+            audio: audioPermission.state === "granted",
+          }));
+        });
+
+      const userAgent = navigator.userAgent;
+      if (userAgent.includes("Windows")) {
         setPermissionCheck((prevPermissions) => ({
           ...prevPermissions,
-          audio: audioPermission.state === "granted",
+          operatingSystem: true,
         }));
-      });
-
-    const userAgent = navigator.userAgent;
-    if (userAgent.includes("Windows")) {
-      setPermissionCheck((prevPermissions) => ({
-        ...prevPermissions,
-        operatingSystem: true,
-      }));
+      } else {
+        setPermissionCheck((prevPermissions) => ({
+          ...prevPermissions,
+          operatingSystem: false,
+        }));
+      }
+      if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        setPermissionCheck((prevPermissions) => ({
+          ...prevPermissions,
+          screen: true,
+        }));
+      } else {
+        setPermissionCheck((prevPermissions) => ({
+          ...prevPermissions,
+          screen: false,
+        }));
+      }
     } else {
-      setPermissionCheck((prevPermissions) => ({
-        ...prevPermissions,
-        operatingSystem: false,
-      }));
-    }
-    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-      setPermissionCheck((prevPermissions) => ({
-        ...prevPermissions,
-        screen: true,
-      }));
-    } else {
-      setPermissionCheck((prevPermissions) => ({
-        ...prevPermissions,
-        screen: false,
-      }));
+      navigate("/dashboard");
     }
   }, []);
 
