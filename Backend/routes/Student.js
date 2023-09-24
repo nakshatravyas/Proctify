@@ -66,16 +66,16 @@ router
 //
 router.route("/createcollection").get(createCollection);
 //
-router.route("/facelogin").post(faceLogin);
+router.route("/facelogin").post(studentMiddleware, faceLogin);
 router.route("/faceregister").post(studentMiddleware, faceRegister);
 
 //register exam
-router.route("/registerexam/:examcode").get(studentMiddleware,registerExam)
+router.route("/registerexam/:examcode").get(studentMiddleware, registerExam)
 
 //get exams registered by student but not given by student
-router.route("/getregisteredexam").get(studentMiddleware,getRegisteredExam)
+router.route("/getregisteredexam").get(studentMiddleware, getRegisteredExam)
 
 //get all exams that are having startdate greater than equal to currentdate
-router.route("/getallexams").get(studentMiddleware,getAllExams)
+router.route("/getallexams").get(studentMiddleware, getAllExams)
 
 module.exports = router;

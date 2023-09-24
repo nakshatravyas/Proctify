@@ -12,7 +12,7 @@ const e = require("express");
 require("dotenv").config();
 const AWS = require("../aws-config.js");
 const rekognition = new AWS.Rekognition();
-const { matchFaceWithRekognitionCollection } = require("../utils/rekognition");
+const { matchFaceWithRekognitionCollection, detectFacesWithRekognition } = require("../utils/rekognition");
 const { uploadImageToS3 } = require("../utils/s3");
 const { registerFaceWithRekognition } = require("../utils/rekognition");
 //utility
@@ -79,26 +79,38 @@ const createCollection = async (req, res) => {
   });
 };
 const faceLogin = async (req, res) => {
-  try {
-    const { imageBase64Data } = req.body;
+  const { studentId } = req.user;
+  const { imageBase64Data } = req.body;
 
-    // Match the captured face with the Rekognition collection
-    const base64ImageData = imageBase64Data; // Replace with your actual Base64 data
+  // Match the captured face with the Rekognition collection
+  const base64ImageData = imageBase64Data; // Replace with your actual Base64 data
 
-    // Decode the Base64 data (remove the data:image/jpeg;base64, prefix)
-    const base64Image = base64ImageData.replace(/^data:image\/\w+;base64,/, "");
-    const matchedFaces = await matchFaceWithRekognitionCollection(base64Image);
-
-    // Determine if the face matches any registered user
-    if (matchedFaces.length > 0) {
-      res.json({ message: "Login successful" });
-    } else {
-      res.status(401).json({ error: "Login failed: Face not recognized" });
+  // Decode the Base64 data (remove the data:image/jpeg;base64, prefix)
+  const base64Image = base64ImageData.replace(/^data:image\/\w+;base64,/, "");
+  const matchedFaces = await matchFaceWithRekognitionCollection(base64Image);
+  // await detectFacesWithRekognition(imageUrl);
+  console.log(matchedFaces);
+  let max = 0.0;
+  let index = -1;
+  for (let i = 0; i < matchedFaces.length; ++i) {
+    if (matchedFaces[i].Similarity > max) {
+      index = i
     }
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
+  if (Number(matchedFaces[index].Face.ExternalImageId) != studentId) {
+    throw new BadRequestError("Face not verified")
+  }
+  // Determine if the face matches any registered user
+  //   if (matchedFaces.length > 0) {
+  //     res.json({ message: "Login successful" });
+  //   } else {
+  //     res.status(401).json({ error: "Login failed: Face not recognized" });
+  //   }
+  // } catch (error) {
+  //   console.error("Login error:", error);
+  //   res.status(500).json({ error: "Internal Server Error" });
+  // }
+  res.status(StatusCodes.OK).json({ res: "Success" })
 };
 const faceRegister = async (req, res) => {
   const { studentId } = req.user;
@@ -416,25 +428,25 @@ const getExamDetails = async (req, res) => {
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows[0] });
 };
 
-const registerExam = async(req,res)=>{
-  const {studentId} = req.user
-  const {examcode} = req.params
+const registerExam = async (req, res) => {
+  const { studentId } = req.user
+  const { examcode } = req.params
   const response = await pool.query(`insert into registered_exams values(${studentId},'${examcode}');`)
-  res.status(StatusCodes.OK).json({res:"Success"})
+  res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
-const getRegisteredExam = async(req,res)=>{
-  const {studentId} = req.user
+const getRegisteredExam = async (req, res) => {
+  const { studentId } = req.user
   let yourDate = new Date();
   const response = await pool.query(`select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${yourDate.toISOString().split("T")[0]}';`)
-  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
-const getAllExams = async(req,res)=>{
-  const {studentId} = req.user
+const getAllExams = async (req, res) => {
+  const { studentId } = req.user
   let yourDate = new Date();
   const response = await pool.query(`select * from exam as e full outer join registered_exams as r on e.examcode = r.examcode where e.startdate>='${yourDate.toISOString().split("T")[0]}' and r.sid!=${studentId} ;`)
-  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
 module.exports = {

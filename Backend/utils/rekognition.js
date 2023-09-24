@@ -37,6 +37,7 @@ async function detectFacesWithRekognition(imageUrl) {
 
   try {
     const response = await rekognition.detectFaces(params).promise();
+    console.log(response.FaceDetails);
     return response.FaceDetails; // Returns face details if faces are detected
   } catch (error) {
     console.error("Error detecting faces with Rekognition:", error);
