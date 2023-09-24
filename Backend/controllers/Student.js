@@ -92,7 +92,6 @@ const faceLogin = async (req, res) => {
   const base64Image = base64ImageData.replace(/^data:image\/\w+;base64,/, "");
   const matchedFaces = await matchFaceWithRekognitionCollection(base64Image);
   // await detectFacesWithRekognition(imageUrl);
-  console.log(matchedFaces);
   let max = 0.0;
   let index = -1;
   for (let i = 0; i < matchedFaces.length; ++i) {
@@ -294,6 +293,7 @@ const canGiveExam = async (req, res) => {
     throw new BadRequestError("Please provide valid examcode");
   }
   let yourDate = new Date();
+  const check=yourDate.toLocaleString(undefined, { timeZone: 'Asia/Kolkata' }).split(",")[0]
 
   // Get the current hour, minute, and second
   const hours = yourDate.getHours().toString().padStart(2, "0");
@@ -303,9 +303,7 @@ const canGiveExam = async (req, res) => {
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
   const response = await pool.query(
-    `select * from exam where startdate = '${
-      yourDate.toISOString().split("T")[0]
-    }' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
+    `select * from exam where startdate = '${check}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
   if (response.rowCount == 0) {
     throw new BadRequestError("Check the exam schedule and try again");
