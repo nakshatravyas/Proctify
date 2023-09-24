@@ -12,7 +12,7 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 
 const NewExam = () => {
@@ -27,9 +27,7 @@ const NewExam = () => {
     mode: "",
     isRandom: "",
   })
-  const [error, setError] = useState('')
   const [examcode, setExamCode] = useState('')
-  const navigate = useNavigate()
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log(values)
@@ -51,12 +49,11 @@ const NewExam = () => {
       })
       console.log(response.data.examcode)
       setExamCode(response.data.examcode)
-      //toast for success
+      toast.success("New exam created")
     }
     catch (err) {
       console.log(err.response.data.msg)
-      setError(err.response.data.msg)
-      //toast for error
+      toast.error(err.response.data.msg)
     }
   }
   return (
@@ -72,11 +69,9 @@ const NewExam = () => {
       >
         <TextField
           fullWidth
-
+          required
           type="text"
           label="Exam Name"
-
-
           name="exam_name"
           onChange={e => setValues({ ...values, exam_name: e.target.value })}
           sx={{ gridColumn: "span 4" }}
@@ -85,7 +80,7 @@ const NewExam = () => {
         <LocalizationProvider dateAdapter={AdapterDayjs} >
           <DemoContainer components={['DatePicker']} sx={{ gridColumn: "span 2" }}>
             <DatePicker label="Select Date" name="exam_date" sx={{ width: "100%" }}
-              onChange={e => setValues({ ...values, startdate: e.format() })} />
+              onChange={e => setValues({ ...values, startdate: e.format() })}/>
           </DemoContainer>
         </LocalizationProvider>
 
@@ -101,23 +96,19 @@ const NewExam = () => {
           </DemoContainer>
         </LocalizationProvider>
 
-        {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DemoItem >
-            <TimePicker views={['minutes']} format="mm" label="Duration" name="exam_duration" onChange={e => setValues({ ...values, duration: e.format() })} />
-          </DemoItem>
-        </LocalizationProvider> */}
-
         <TextField
           fullWidth
           type="number"
           label="Duration"
           name="duration"
+          required
           onChange={e => setValues({ ...values, duration: e.target.value })}
           sx={{ gridColumn: "span 1" }}
         />
         <TextField
           fullWidth
           type="number"
+          required
           label="Negative Marking in %"
           name="negative_mark"
           onChange={e => setValues({ ...values, negative_marks: e.target.value })}
@@ -126,6 +117,7 @@ const NewExam = () => {
         <TextField
           fullWidth
           type="number"
+          required
           label="Question Weightage"
           name="que_weightage"
           onChange={e => setValues({ ...values, question_weightage: e.target.value })}
@@ -145,7 +137,7 @@ const NewExam = () => {
           </RadioGroup>
         </FormControl>
         <FormControl>
-          <FormLabel id="demo-controlled-radio-buttons-group">Would you like each student to have questions in a random format?</FormLabel>
+          <FormLabel id="demo-controlled-radio-buttons-group">Randomized student question formats?</FormLabel>
           <RadioGroup
             row
             aria-labelledby="demo-controlled-radio-buttons-group"
@@ -161,14 +153,14 @@ const NewExam = () => {
 
 
       </Box>
-      <Box display="flex" justifyContent="end" mt="20px">
-        <Button type="submit" color="secondary" variant="contained" onClick={handleSubmit}>
+      <Box display="flex" justifyContent="end" mt="20px" sx={{pl:"6px",pr:"6px",pt:"2px",pb:"2px"}}>
+        <Button type="submit" color="secondary" variant="contained" onClick={handleSubmit} sx={{pl:"16px",pr:"16px",pt:"10px",pb:"10px"}}>
           Create Exam
         </Button>
       </Box>
-      <Typography component="h1" variant="h3" color="secondary" align="center">
+      {examcode?<Typography component="h1" variant="h3" color="secondary" align="center">
         Exam Code : {examcode}
-      </Typography>
+      </Typography>:""}
 
 
     </Box>

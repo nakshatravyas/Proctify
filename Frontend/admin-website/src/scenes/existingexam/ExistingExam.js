@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, useTheme } from "@mui/material";
-import { tokens } from "../../theme";
+import { Box, Button, Typography } from "@mui/material";
 import Header from "../../components/Header";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -9,13 +8,11 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect } from "react";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const ExistingExam = () => {
-  const [error, setError] = useState('')
   const [optionchange, setoptionchange] = useState('')
   const [options, setOptions] = useState([])
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
 
   const [values, setValues] = useState({
     starttime: "",
@@ -40,12 +37,11 @@ const ExistingExam = () => {
         }
       })
       console.log(response.data.res)
-      //toast for success
+      toast.success("Exam created successfully")
     }
     catch (err) {
       console.log(err.response.data.msg)
-      setError(err.response.data.msg)
-      //toast for error
+      toast.error(err.response.data.msg)
     }
   }
 
@@ -70,7 +66,7 @@ const ExistingExam = () => {
     }
     catch (err) {
       console.log(err.response.data.msg)
-      setError(err.response.data.msg)
+      toast.error(err.response.data.msg)
     }
   }
   return (
@@ -83,14 +79,15 @@ const ExistingExam = () => {
         gap="10px"
         pt="10px"
       >
-        <Typography component="h1" variant="h3">
-          Enter Exam Code
+        <Typography component="h1" variant="h3" fontWeight="bold">
+          Exam Code
         </Typography>
         <input style={{
-          backgroundColor: '#1F2A40',
-          color: "white",
+          backgroundColor: '#e0e0e0',
+          color: "black",
           borderRadius: "3px",
           width: "20rem",
+          height:"3.2rem",
           padding: "10px",
           border: "none",
         }} list="dataa" onChange={change} placeholder="Search" />
@@ -112,8 +109,9 @@ const ExistingExam = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
+        flexDirection="column"
         gap="10px"
-        mt="50px"
+        mt="10px"
       >
         <LocalizationProvider dateAdapter={AdapterDayjs} >
           <DemoContainer components={['DatePicker']} sx={{ gridColumn: "span 2" }}>
@@ -134,7 +132,7 @@ const ExistingExam = () => {
         </LocalizationProvider>
       </Box>
       <Box display="flex" justifyContent="center" mt="50px">
-        <Button type="submit" color="secondary" variant="contained" onClick={handleSubmit}>
+        <Button type="submit" color="secondary" variant="contained" onClick={handleSubmit} sx={{pl:"16px",pr:"16px",pt:"10px",pb:"10px"}}>
           Create Exam
         </Button>
       </Box>

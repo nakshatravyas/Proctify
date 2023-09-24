@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import axios from "axios";
+import toast from 'react-hot-toast';
 
 const EditProfile = () => {
     const [values, setValues] = useState({
@@ -14,7 +15,6 @@ const EditProfile = () => {
         phoneno: "",
         email: "",
     });
-    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,7 +34,7 @@ const EditProfile = () => {
                 });
             } catch (err) {
                 console.log(err.response.data.msg);
-                setError(err.response.data.msg);
+                toast.error(err.response.data.msg)
             }
         };
 
@@ -53,11 +53,10 @@ const EditProfile = () => {
             });
 
             console.log(response.data);
-            //toast for success
+            toast.success("Profile Updated")
         } catch (err) {
             console.log(err.response.data.msg);
-            setError(err.response.data.msg);
-            //toast for error
+            toast.error(err.response.data.msg)
         }
     };
 
@@ -101,8 +100,8 @@ const EditProfile = () => {
                         sx={{ gridColumn: "span 4" }}
                     />
                 </Box>
-                <Box display="flex" justifyContent="end" mt="20px">
-                    <Button type="submit" color="secondary" variant="contained">
+                <Box display="flex" justifyContent="center" mt="20px">
+                    <Button type="submit" color="secondary" variant="contained" sx={{pl:"16px",pr:"16px",pt:"10px",pb:"10px"}}>
                         Update
                     </Button>
                 </Box>

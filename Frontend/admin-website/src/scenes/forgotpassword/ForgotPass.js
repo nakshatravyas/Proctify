@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Button, TextField, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const ForgotPass = () => {
   const navigate = useNavigate()
@@ -23,21 +24,21 @@ const ForgotPass = () => {
       try {
         const response = await axios.patch('http://127.0.0.1:3002/api/v1/admin/forgotpassword', { email })
         console.log(response.data.otpsent)
+        toast.success("Email sent")
         setStep(2);
-        //toast here
       } catch (err) {
         console.log(err.response.data.msg)
-        //toast here
+        toast.error(err.response.data.msg)
       }
     } else if (step === 2 && otp) {
       try {
         const response = await axios.post('http://127.0.0.1:3002/api/v1/admin/verifyotp', { email, otp })
         console.log(response.data)
+        toast.success("OTP verified")
         setStep(3);
-        //toast here
       } catch (err) {
         console.log(err.response.data.msg)
-        //toast here
+        toast.error(err.response.data.msg)
       }
     }
   };
@@ -51,10 +52,12 @@ const ForgotPass = () => {
     try {
       const response = await axios.post("http://127.0.0.1:3002/api/v1/admin/changepassword", { email, password: newPassword })
       console.log(response.data)
+      toast.success("Password updated successfully")
       navigate('/login')
     }
     catch (err) {
       console.log(err.response.data.msg)
+      toast.error(err.response.data.msg)
     }
   };
 

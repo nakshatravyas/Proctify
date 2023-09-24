@@ -14,7 +14,7 @@ import Home from "./scenes/Home/Home"
 import Register from "./scenes/register/Register" 
 import ForgotPass from "./scenes/forgotpassword/ForgotPass";
 import EditProfile from "./scenes/editprofile/EditProfile";
-import PastExamTable from "./scenes/pastexams/PastExamTable";
+import { Toaster } from 'react-hot-toast';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -67,6 +67,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <RouterProvider router={router} />
+        <Toaster position="bottom-center" />
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

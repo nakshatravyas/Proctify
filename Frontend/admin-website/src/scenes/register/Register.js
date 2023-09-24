@@ -9,6 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast';
 
 const defaultTheme = createTheme();
 
@@ -21,8 +22,6 @@ export default function Register() {
         password: ''
     })
     const navigate = useNavigate()
-    // axios.defaults.withCredentials = true;
-    const [error, setError] = useState('')
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -31,11 +30,12 @@ export default function Register() {
             const response = await axios.post('http://127.0.0.1:3002/api/v1/admin/register', values)
             console.log(response)
             localStorage.setItem('token', response.data.token)
+            toast.success("Registration Successful")
             navigate("/global")
         }
         catch (err) {
             console.log(err.response.data.msg)
-            setError(err.response.data.msg)
+            toast.error(err.response.data.msg)
         }
         setValues({
             name: "",
@@ -120,9 +120,6 @@ export default function Register() {
                         </Button>
                         
                     </Box>
-                    <Typography component="h1" variant="h5" color="red">
-                        {error}
-                    </Typography>
                 </Box>
 
             </Container>
