@@ -35,13 +35,13 @@ const VerifyPhoto = () => {
           },
         }
       );
-      // console.log(response.data.message);
+      console.log(response.data);
       // navigate("/dashboard");
-      document.documentElement.requestFullscreen().then(() => {
-        navigate(`/dashboard/exam/${location.state.code}`);
-      });
+      // document.documentElement.requestFullscreen().then(() => {
+      navigate(`/dashboard/exam/${location.state.code}`);
+      // });
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Registration error:", error.response.data.msg);
     }
   };
   return (
