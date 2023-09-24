@@ -12,7 +12,10 @@ const e = require("express");
 require("dotenv").config();
 const AWS = require("../aws-config.js");
 const rekognition = new AWS.Rekognition();
-const { matchFaceWithRekognitionCollection, detectFacesWithRekognition } = require("../utils/rekognition");
+const {
+  matchFaceWithRekognitionCollection,
+  detectFacesWithRekognition,
+} = require("../utils/rekognition");
 const { uploadImageToS3 } = require("../utils/s3");
 const { registerFaceWithRekognition } = require("../utils/rekognition");
 //utility
@@ -94,11 +97,11 @@ const faceLogin = async (req, res) => {
   let index = -1;
   for (let i = 0; i < matchedFaces.length; ++i) {
     if (matchedFaces[i].Similarity > max) {
-      index = i
+      index = i;
     }
   }
   if (Number(matchedFaces[index].Face.ExternalImageId) != studentId) {
-    throw new BadRequestError("Face not verified")
+    throw new BadRequestError("Face not verified");
   }
   // Determine if the face matches any registered user
   //   if (matchedFaces.length > 0) {
@@ -110,7 +113,7 @@ const faceLogin = async (req, res) => {
   //   console.error("Login error:", error);
   //   res.status(500).json({ error: "Internal Server Error" });
   // }
-  res.status(StatusCodes.OK).json({ res: "Success" })
+  res.status(StatusCodes.OK).json({ res: "Success" });
 };
 const faceRegister = async (req, res) => {
   const { studentId } = req.user;
@@ -118,9 +121,11 @@ const faceRegister = async (req, res) => {
   // console.log(imageBase64Data);
   console.log(studentId);
   try {
-
     // Upload image to S3
-    const imageUrl = await uploadImageToS3(JSON.stringify(studentId), String(imageBase64Data));
+    const imageUrl = await uploadImageToS3(
+      JSON.stringify(studentId),
+      String(imageBase64Data)
+    );
 
     // Register face with Rekognition
     await registerFaceWithRekognition(JSON.stringify(studentId), imageUrl);
@@ -140,7 +145,9 @@ const forgotPasswordStudent = async (req, res) => {
     throw new BadRequestError("Please provide email");
   }
   const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
-  const check = await pool.query(`select * from student where email like '${email}';`)
+  const check = await pool.query(
+    `select * from student where email like '${email}';`
+  );
   if (check.rowCount == 0) {
     throw new BadRequestError("Email does not exists");
   }
@@ -296,7 +303,8 @@ const canGiveExam = async (req, res) => {
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
   const response = await pool.query(
-    `select * from exam where startdate = '${yourDate.toISOString().split("T")[0]
+    `select * from exam where startdate = '${
+      yourDate.toISOString().split("T")[0]
     }' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
   if (response.rowCount == 0) {
@@ -430,25 +438,56 @@ const getExamDetails = async (req, res) => {
 };
 
 const registerExam = async (req, res) => {
-  const { studentId } = req.user
-  const { examcode } = req.params
-  const response = await pool.query(`insert into registered_exams values(${studentId},'${examcode}');`)
-  res.status(StatusCodes.OK).json({ res: "Success" })
-}
+  const { studentId } = req.user;
+  const { examcode } = req.params;
+  const response = await pool.query(
+    `insert into registered_exams values(${studentId},'${examcode}');`
+  );
+  res.status(StatusCodes.OK).json({ res: "Success" });
+};
 
 const getRegisteredExam = async (req, res) => {
-  const { studentId } = req.user
+  const { studentId } = req.user;
   let yourDate = new Date();
-  const response = await pool.query(`select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${yourDate.toISOString().split("T")[0]}';`)
-  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
-}
+  const response = await pool.query(
+    `select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${
+      yourDate.toISOString().split("T")[0]
+    }';`
+  );
+  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows });
+};
 
 const getAllExams = async (req, res) => {
-  const { studentId } = req.user
+  const { studentId } = req.user;
   let yourDate = new Date();
-  const response = await pool.query(`select * from exam as e full outer join registered_exams as r on e.examcode = r.examcode where e.startdate>='${yourDate.toISOString().split("T")[0]}' and r.sid!=${studentId} ;`)
-  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
-}
+  const response = await pool.query(
+    `select * from exam as e full outer join registered_exams as r on e.examcode = r.examcode where e.startdate>='${
+      yourDate.toISOString().split("T")[0]
+    }' and r.sid!=${studentId} ;`
+  );
+  res.status(StatusCodes.OK).json({ res: "Success", data: response.rows });
+};
+
+const resetPassword = async (req, res) => {
+  let { password, newpassword } = req.body;
+  const { studentId } = req.user;
+  const response = await pool.query(
+    `select * from student where sid = '${studentId}';`
+  );
+  const isPasswordCorrect = await bcrypt.compare(
+    password,
+    response.rows[0].password
+  );
+  if (!isPasswordCorrect) {
+    throw new BadRequestError("Please enter correct password");
+  }
+  const salt = await bcrypt.genSalt(10);
+  newpassword = await bcrypt.hash(newpassword, salt);
+  const update = await pool.query(
+    `update student set password = '${newpassword}' where sid = ${studentId};`
+  );
+  res.status(StatusCodes.OK).json({ res: "Success" });
+};
 
 module.exports = {
   forgotPasswordStudent,
@@ -470,5 +509,6 @@ module.exports = {
   faceRegister,
   registerExam,
   getRegisteredExam,
-  getAllExams
+  getAllExams,
+  resetPassword,
 };

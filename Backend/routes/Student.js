@@ -21,7 +21,8 @@ const {
   faceRegister,
   registerExam,
   getRegisteredExam,
-  getAllExams
+  getAllExams,
+  resetPassword,
 } = require("../controllers/Student");
 
 const studentMiddleware = require("../middleware/authentication_student");
@@ -57,7 +58,7 @@ router
   .get(studentMiddleware, getSpecificExamResult);
 
 //Report Problem
-router.route("/reportproblem").get(studentMiddleware, reportProblem);
+router.route("/reportproblem").post(studentMiddleware, reportProblem);
 
 //get exam detail based on examcode
 router
@@ -70,12 +71,15 @@ router.route("/facelogin").post(studentMiddleware, faceLogin);
 router.route("/faceregister").post(studentMiddleware, faceRegister);
 
 //register exam
-router.route("/registerexam/:examcode").get(studentMiddleware, registerExam)
+router.route("/registerexam/:examcode").get(studentMiddleware, registerExam);
 
 //get exams registered by student but not given by student
-router.route("/getregisteredexam").get(studentMiddleware, getRegisteredExam)
+router.route("/getregisteredexam").get(studentMiddleware, getRegisteredExam);
 
 //get all exams that are having startdate greater than equal to currentdate
-router.route("/getallexams").get(studentMiddleware, getAllExams)
+router.route("/getallexams").get(studentMiddleware, getAllExams);
+
+//this will reset password by taking current password and taking new password
+router.route("/resetpassword").post(studentMiddleware, resetPassword);
 
 module.exports = router;
