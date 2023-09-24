@@ -3,7 +3,6 @@ import {
   Box,
   IconButton,
   Typography,
-  useTheme,
   TextField,
   Divider,
   Table,
@@ -19,20 +18,17 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
-import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import SearchIcon from "@mui/icons-material/Search";
+import toast from 'react-hot-toast';
 
 // Define your Dashboard component
-const Dashboard = () => {
+const ViewQuestion = () => {
   // Retrieve the token from local storage
   const token = localStorage.getItem('token');
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  const [error, setError] = useState('');
   const [data, setData] = useState([]);
   const [optionchange, setOptionChange] = useState('');
   const [options, setOptions] = useState([]);
@@ -64,7 +60,7 @@ const Dashboard = () => {
       setOptions(response.data.data);
     } catch (err) {
       console.log(err.response.data.msg);
-      setError(err.response.data.msg);
+      toast.error(err.response.data.msg)
     }
   };
 
@@ -86,28 +82,13 @@ const Dashboard = () => {
       });
       // Set the fetched options in state'
       console.log(response.data);
-      // setOptions(response.data.data);
+      toast.success("Question Updated")
 
     } catch (err) {
       console.log(err.response.data.msg);
-      setError(err.response.data.msg);
+      toast.error(err.response.data.msg)
     }
-
-    // Make an API call to update the values
-    // axios
-    //   .put(`your_api_endpoint/${editedData.id}`, editedData)
-    //   .then((response) => {
-    //     console.log('Data updated successfully:', response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error updating data:', error);
-    //   });
-
-    await fetchdata();
     setEditDialogOpen(false);
-    // useEffect(() => {
-    //   fetchdata();
-    // }, [])
   };
 
   // Function to handle image upload
@@ -131,23 +112,26 @@ const Dashboard = () => {
       return (
         <div>
           {/* Actual image upload component */}
-          <img
-            src={editedData.image}
-            alt="Question"
-            style={{ maxWidth: '55%', marginTop: '16px' }}
-          />
-          {editedData.image ? (
-            <Button type="submit" color="secondary" variant="contained" onClick={removeimage}>
-              Remove
-            </Button>
-          ) : (
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              style={{ margin: '16px 0' }} // Add margin
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+
+            <img
+              src={editedData.image}
+              alt="Question"
+              style={{ maxWidth: '55%', maxHeight: "200px", marginTop: '5px' }}
             />
-          )}
+            {editedData.image ? (
+              <Button type="submit" color="primary" style={{ backgroundColor: "red", padding: "2px", marginBottom: "10px" }} variant="contained" onClick={removeimage}>
+                X
+              </Button>
+            ) : (
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ margin: '16px 0' }} // Add margin
+              />
+            )}
+          </Box>
           <TextField
             label="Question"
             fullWidth
@@ -156,22 +140,24 @@ const Dashboard = () => {
             style={{ marginBottom: '16px' }}
           />
           {/* Options for image questions */}
-          {editedData.options.map((option, index) => (
-            <div key={index}>
-              <TextField
-                label={`Option ${String.fromCharCode(65 + index)}`}
-                fullWidth
-                value={option}
-                onChange={(e) => {
-                  const updatedOptions = [...editedData.options];
-                  updatedOptions[index] = e.target.value;
-                  setEditedData({ ...editedData, options: updatedOptions });
-                }}
-                style={{ marginBottom: '16px' }}
-              />
-              {index < editedData.options.length - 1 && <Divider />} {/* Add divider */}
-            </div>
-          ))}
+          {
+            editedData.options.map((option, index) => (
+              <div key={index}>
+                <TextField
+                  label={`Option ${String.fromCharCode(65 + index)}`}
+                  fullWidth
+                  value={option}
+                  onChange={(e) => {
+                    const updatedOptions = [...editedData.options];
+                    updatedOptions[index] = e.target.value;
+                    setEditedData({ ...editedData, options: updatedOptions });
+                  }}
+                  style={{ marginBottom: '16px' }}
+                />
+                {index < editedData.options.length - 1 && <Divider />} {/* Add divider */}
+              </div>
+            ))
+          }
 
           <TextField
             label="Correct Answer"
@@ -182,7 +168,7 @@ const Dashboard = () => {
             }
             style={{ marginTop: '16px' }}
           />
-        </div>
+        </div >
       );
     } else {
       return (
@@ -248,6 +234,7 @@ const Dashboard = () => {
       setData(response.data.data);
     } catch (err) {
       console.log(err.response.data.msg);
+      toast.error(err.response.data.msg)
     }
   };
 
@@ -265,9 +252,10 @@ const Dashboard = () => {
         }
       });
       console.log(response.data);
-      // setData(response.data.data);
+      toast.success("Question Deleted")
     } catch (err) {
       console.log(err.response.data.msg);
+      toast.error(err.response.data.msg)
     }
   }
 
@@ -281,19 +269,19 @@ const Dashboard = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        gap="10px"
         pt="10px"
         mb="20px"
       >
-        <Typography component="h1" variant="h3">
-          Enter Exam Code
+        <Typography component="h1" variant="h3" marginRight="10px" fontWeight="bold">
+          Exam Code
         </Typography>
         <input
           style={{
-            backgroundColor: '#1F2A40',
-            color: "white",
+            backgroundColor: '#e0e0e0',
+            color: "black",
             borderRadius: "3px",
             width: "20rem",
+            height: "3.2rem",
             padding: "10px",
             border: "none",
           }}
@@ -304,36 +292,40 @@ const Dashboard = () => {
         <datalist id="dataa">
           {options.map((op) => <option key={op}>{op}</option>)}
         </datalist>
-        <IconButton type="button" sx={{ p: 1 }} onClick={searchquestion}>
+        <IconButton type="button" sx={{ p: "15px", backgroundColor: "#0159ED", borderRadius: "0", color: "white", '&:hover': { backgroundColor: "#1976d2" } }} onClick={searchquestion}>
           <SearchIcon />
         </IconButton>
       </Box>
       {data.length !== 0 ? (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ backgroundColor: '#e0e0e0', }}>
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell>Questions</TableCell>
-                <TableCell align="right">Action</TableCell>
+              <TableRow >
+                <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>Questions</TableCell>
+                <TableCell align="right" sx={{ fontWeight: "bold", fontSize: "20px" }}>Action</TableCell>
               </TableRow>
+              <hr style={{ width: "139%" }} />
             </TableHead>
             <TableBody>
               {data.map((item) => (
-                <TableRow key={item.questionid}>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      aria-label="Edit"
-                      color="secondary"
-                      onClick={() => handleEditClick(item)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton aria-label="Delete" color="secondary" onClick={() => deletequestion(item.questionid)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
+                <>
+                  <TableRow key={item.questionid}>
+                    <TableCell sx={{ fontSize: "16px" }}>{item.description}</TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        aria-label="Edit"
+                        color="secondary"
+                        onClick={() => handleEditClick(item)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton aria-label="Delete" color="secondary" onClick={() => deletequestion(item.questionid)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                  <hr style={{ width: "139%" }} />
+                </>
               ))}
             </TableBody>
           </Table>
@@ -349,10 +341,10 @@ const Dashboard = () => {
           {renderForm()}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} color="secondary">
+          <Button onClick={() => setEditDialogOpen(false)} color="secondary" variant='contained'>
             Cancel
           </Button>
-          <Button onClick={handleUpdate} color="secondary">
+          <Button onClick={handleUpdate} color="secondary" variant='contained'>
             Update
           </Button>
         </DialogActions>
@@ -361,4 +353,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ViewQuestion;

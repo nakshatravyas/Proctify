@@ -5,12 +5,11 @@ import {
   MenuItem,
   SubMenu,
 } from "react-pro-sidebar";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import CreateIcon from "@mui/icons-material/Create";
 import EventRepeatOutlinedIcon from "@mui/icons-material/EventRepeatOutlined";
@@ -21,13 +20,11 @@ import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   return (
     <MenuItem
       active={selected === title}
       style={{
-        color: colors.grey[100],
+        color: "white",
       }}
       onClick={() => setSelected(title)}
       icon={icon}
@@ -41,7 +38,6 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 const Sidebar = ({ isSticky }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
 
   return (
@@ -50,14 +46,14 @@ const Sidebar = ({ isSticky }) => {
 
         position: isSticky ? "sticky" : "relative", // Make it sticky
         minWidth: "270px",
+        top: "0", // Adjust as needed
+        height: "100vh", // Limit height
         "& .pro-sidebar": {
-          top: "0", // Adjust as needed
           zIndex: "100", // Adjust as needed
-          height: "100vh", // Limit height
           overflowY: "auto", // Enable scrolling
         },
         "& .pro-sidebar-inner": {
-          background: `${colors.primary[400]} !important`,
+          background: `${colors.primary[200]} !important`,
         },
         "& .pro-icon-wrapper": {
           backgroundColor: "transparent !important",
@@ -66,57 +62,32 @@ const Sidebar = ({ isSticky }) => {
           padding: "5px 35px 5px 20px !important",
         },
         "& .pro-inner-item:hover": {
-          color: "#868dfb !important",
+          color: "#0159ED !important",
         },
         "& .pro-menu-item.active": {
-          color: "#6870fa !important",
+          color: "#0159ED !important",
         },
       }}
     >
-      <ProSidebar collapsed={isCollapsed}>
+      <ProSidebar collapsed={false}>
         <Menu iconShape="square">
           {/* LOGO AND MENU ICON */}
-          <MenuItem
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
-            style={{
-              margin: "10px 0 20px 0",
-              color: colors.grey[100],
-            }}
-          >
-            {!isCollapsed && (
-              <Box
-                display="flex"
-                justifyContent="right"
-                alignItems="center"
-                ml="15px"
+          <Box mb="25px" mt="50px">
+            <Box textAlign="center">
+              <Typography
+                variant="h2"
+                color="white"
+                fontWeight="bold"
+                sx={{ m: "10px 0 0 0" }}
               >
+                Admin
+              </Typography>
 
-                <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-                  <MenuOutlinedIcon />
-                </IconButton>
-              </Box>
-            )}
-          </MenuItem>
-
-          {!isCollapsed && (
-            <Box mb="25px">
-
-              <Box textAlign="center">
-                <Typography
-                  variant="h2"
-                  color={colors.grey[100]}
-                  fontWeight="bold"
-                  sx={{ m: "10px 0 0 0" }}
-                >
-                  Admin
-                </Typography>
-
-              </Box>
             </Box>
-          )}
+          </Box>
 
-          <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+
+          <Box paddingLeft="10%">
             <Item
               title="Ongoing Exams"
               to=""
@@ -126,7 +97,7 @@ const Sidebar = ({ isSticky }) => {
             />
 
             <SubMenu title="Create Exam" icon={<AppRegistrationIcon />} style={{
-              color: colors.grey[100],
+              color: "white",
             }}>
               <Item
                 title="Create New Exam"

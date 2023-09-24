@@ -11,6 +11,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
+import toast from 'react-hot-toast';
 
 const defaultTheme = createTheme();
 
@@ -21,8 +22,6 @@ export default function SignIn() {
         password: ''
     })
     const navigate = useNavigate()
-    // axios.defaults.withCredentials = true;
-    const [error, setError] = useState('')
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -31,11 +30,12 @@ export default function SignIn() {
             const response = await axios.post('http://127.0.0.1:3002/api/v1/admin/login', values)
             console.log(response.data.token)
             localStorage.setItem('token', response.data.token)
+            toast.success('Login Successful');
             navigate("/global")
         }
         catch (err) {
             console.log(err.response.data.msg)
-            setError(err.response.data.msg)
+            toast.error(err.response.data.msg);
         }
 
     }
@@ -105,12 +105,10 @@ export default function SignIn() {
                             </Grid>
                         </Grid>
                     </Box>
-                    <Typography component="h1" variant="h5" color="red">
-                        {error}
-                    </Typography>
                 </Box>
 
             </Container>
+            
         </ThemeProvider>
     );
 }

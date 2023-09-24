@@ -28,7 +28,7 @@ const Dashboard = () => {
         pt="50px"
       >
         <Typography component="h1" variant="h3">
-          Enter Exam Code :
+          Exam Code :
         </Typography>
         <Box
         display="flex"
@@ -36,8 +36,8 @@ const Dashboard = () => {
         borderRadius="3px"
         width="20rem"
         >
-        <InputBase sx={{ flex: 1 }} onChange={e => setexamCode( e.target.value)} />
-        <IconButton type="button" sx={{ p: 1 }} onClick={e => navigate("exam")}>
+        <InputBase sx={{ flex: 1,p:"10px" }} onChange={e => setexamCode( e.target.value)} placeholder="Exam Code"/>
+        <IconButton type="button" sx={{ p: "15px",backgroundColor:"#0159ED",borderRadius:"0",color:"white",'&:hover':{backgroundColor:"#1976d2"} }} onClick={e => navigate("exam")}>
           <SearchIcon />
         </IconButton>
         </Box>

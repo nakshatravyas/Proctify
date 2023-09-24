@@ -20,7 +20,7 @@ const ExamDetailsPopup = ({ open, onClose, examDetail }) => {
 
   useEffect(() => {
     fetchdata(examDetail)
-  })
+  },[])
 
   const fetchdata = async (code) => {
     try {
@@ -36,12 +36,12 @@ const ExamDetailsPopup = ({ open, onClose, examDetail }) => {
     catch (err) {
       console.log(err.response.data.msg)
       setError(err.response.data.msg)
+      
     }
   }
-  // console.log(examDetail);
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xl">
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xl"  >
+      <DialogContent >
         <IconButton
           edge="end"
           color="inherit"
@@ -52,11 +52,10 @@ const ExamDetailsPopup = ({ open, onClose, examDetail }) => {
           <CloseIcon />
         </IconButton>
         <h2>Exam Details</h2>
-        {detail.length !== 0 ? <TableContainer component={Paper}>
+        {detail.length !== 0 ? <TableContainer component={Paper} sx={{backgroundColor:"#e0e0e0"}}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
                 <TableCell>Student Name</TableCell>
                 <TableCell>CV Based</TableCell>
                 <TableCell>Mobile Detected</TableCell>
@@ -67,7 +66,6 @@ const ExamDetailsPopup = ({ open, onClose, examDetail }) => {
             <TableBody>
               {detail.map((row) => (
                 <TableRow key={row.sid}>
-                  <TableCell>{row.sid}</TableCell>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.cv_based_warnings}</TableCell>
                   <TableCell>{row.mobile_detected}</TableCell>
@@ -77,7 +75,7 @@ const ExamDetailsPopup = ({ open, onClose, examDetail }) => {
               ))}
             </TableBody>
           </Table>
-        </TableContainer> : <Typography variant="h5" component="div" color="white" align='center'>
+        </TableContainer> : <Typography variant="h5" component="div" color="black" align='center'>
           {error}
         </Typography>}
       </DialogContent>

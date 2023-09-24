@@ -1,46 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import axios from "axios";
+import toast from "react-hot-toast";
 
-const ExistingExam = () => {
+const PublishResults = () => {
   const token = localStorage.getItem('token');
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [error, setError] = useState('');
   const [options, setOptions] = useState([]);
   const [optionchange, setOptionChange] = useState('');
 
-  const handleSubmit = async () => {
-    // console.log(values)
+  useEffect(() => {
+    fetchdata();
+  }, [optionchange]);
 
+  const handleSubmit = async () => {
     try {
       const response = await axios.get(`http://127.0.0.1:3002/api/v1/admin/publishresult/${optionchange}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      // Set the fetched options in state
-      // setOptions(response.data.data);
       console.log(response.data);
+      toast.success("Results Published")
     } catch (err) {
       console.log(err.response.data.msg);
-      setError(err.response.data.msg);
+      toast.error(err.response.data.msg)
     }
   }
 
-  const dataa = [
-    "Java",
-    "JavaScript",
-    "React js",
-    "Python",
-    "C",
-    "C++",
-  ]
-  useEffect(() => {
-    fetchdata();
-  }, [optionchange]);
+
 
   const fetchdata = async () => {
     try {
@@ -53,7 +44,7 @@ const ExistingExam = () => {
       setOptions(response.data.data);
     } catch (err) {
       console.log(err.response.data.msg);
-      setError(err.response.data.msg);
+      toast.error(err.response.data.msg)
     }
   };
   const change = (e) => {
@@ -70,8 +61,8 @@ const ExistingExam = () => {
         gap="10px"
         pt="10px"
       >
-        <Typography component="h1" variant="h3">
-          Enter Exam Code :
+        <Typography component="h1" variant="h3" fontWeight="bold">
+          Exam Code :
         </Typography>
         <Box
           display="flex"
@@ -81,10 +72,11 @@ const ExistingExam = () => {
         >
           <input
             style={{
-              backgroundColor: '#1F2A40',
-              color: "white",
+              backgroundColor: '#e0e0e0',
+              color: "black",
               borderRadius: "3px",
               width: "20rem",
+              height: "3.2rem",
               padding: "10px",
               border: "none",
             }}
@@ -99,7 +91,7 @@ const ExistingExam = () => {
       </Box>
 
       <Box display="flex" justifyContent="center" mt="50px">
-        <Button type="submit" color="secondary" variant="contained" onClick={handleSubmit}>
+        <Button type="submit" color="secondary" variant="contained" onClick={handleSubmit} sx={{pl:"16px",pr:"16px",pt:"10px",pb:"10px"}}>
           Publish Result
         </Button>
       </Box>
@@ -107,4 +99,4 @@ const ExistingExam = () => {
   );
 };
 
-export default ExistingExam;
+export default PublishResults;
