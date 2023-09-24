@@ -1,37 +1,36 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ExamCard from "../../components/ExamCard";
-import RecordRTC from 'recordrtc';
+import RecordRTC from "recordrtc";
 import toast from "react-hot-toast";
 
 const GiveExam = () => {
-  const router = useLocation();
-  const [isFullScreen, setFullScreen] = useState(false);
- const [recording, setRecording] = useState(false);
-  const [stream, setStream] = useState(null);
-  const [recordedVideo, setRecordedVideo] = useState(null);
+  const location = useLocation();
+  //   const [isFullScreen, setFullScreen] = useState(false);
+  //  const [recording, setRecording] = useState(false);
+  //   const [stream, setStream] = useState(null);
+  //   const [recordedVideo, setRecordedVideo] = useState(null);
 
-  const recorderRef = useRef(null);
+  //   const recorderRef = useRef(null);
 
-  const startRecording = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getDisplayMedia({ screen: true });
-    console.log(stream)
-    const recorder = new RecordRTC(stream, {
-      type: 'video',
-      mimeType: 'video/webm',
-    });
-    recorder.startRecording();
-    recorderRef.current = recorder;
-    setRecording(true);
-    setStream(stream);
-  } catch (error) {
-    toast.error("Screen Permission Is Necessary")
-    startRecording()
-    }
-};
+  //   const startRecording = async () => {
+  //   try {
+  //     const stream = await navigator.mediaDevices.getDisplayMedia({ screen: true });
+  //     console.log(stream)
+  //     const recorder = new RecordRTC(stream, {
+  //       type: 'video',
+  //       mimeType: 'video/webm',
+  //     });
+  //     recorder.startRecording();
+  //     recorderRef.current = recorder;
+  //     setRecording(true);
+  //     setStream(stream);
+  //   } catch (error) {
+  //     toast.error("Screen Permission Is Necessary")
+  //     startRecording()
+  //     }
+  // };
 
-  
   useEffect(() => {
     //startRecording()
     const blockShortcuts = (event) => {
@@ -55,26 +54,15 @@ const GiveExam = () => {
       <section className="w-full min-h-[100vh] mx-auto flex flex-col">
         <section className="flex justify-between items-center w-full mx-auto py-4 px-10 bg-white shadow border-b">
           <p className="font-semibold">
-            Exam:{" "}
-            <span className="font-normal">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Praesentium, ratione.
-            </span>
+            Exam: <span className="font-normal">{location?.state?.name}</span>
           </p>
           <p className="font-semibold">
-            Code:{" "}
-            <span className="font-normal">
-              {router.pathname.replace("/dashboard/exam/", "")}
-            </span>
+            Exam Code:{" "}
+            <span className="font-normal">{location?.state?.code}</span>
           </p>
         </section>
         <section className="flex justify-between items-start">
-          <ExamCard
-            data={{
-              que_title: "This IS Question Title",
-              que_no: 10,
-            }}
-          />
+          <ExamCard duration={location.state.duration} />
         </section>
       </section>
     </main>

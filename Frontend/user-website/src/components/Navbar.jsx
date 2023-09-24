@@ -1,9 +1,28 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const [login, setLogin] = useState(false);
   const location = useLocation();
   const regex = /^\/dashboard\/exam\/\d+$/;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let token = localStorage.getItem("token");
+    if (!token) {
+      setLogin(false);
+      navigate("/");
+    } else {
+      setLogin(true);
+    }
+  }, [navigate]);
+
+  const logoutHandler = () => {
+    localStorage.removeItem("token");
+    setLogin(false);
+    navigate("/");
+  };
+
   if (
     !location.pathname.includes("/dashboard/exam/") &&
     !regex.test(location.pathname)
@@ -13,6 +32,14 @@ const Navbar = () => {
         <Link to={"/"}>
           <p className="text-xl font-semibold">User Website</p>
         </Link>
+        {login && (
+          <button
+            className="mr-4 text-black hover:bg-red-100 px-4 py-1 hover:text-red-700 rounded-md transition-all duration-150 ease-out hover:transition-all hover:duration-150 hover:ease-in"
+            onClick={logoutHandler}
+          >
+            Logout
+          </button>
+        )}
       </nav>
     );
   } else {

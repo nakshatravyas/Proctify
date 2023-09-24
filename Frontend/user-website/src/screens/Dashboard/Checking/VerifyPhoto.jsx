@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 const VerifyPhoto = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  console.log(location);
   const webcamRef = useRef(null);
   const [imageBase64Data, setImageBase64Data] = useState(null);
   const capture = useCallback(() => {
@@ -15,14 +16,9 @@ const VerifyPhoto = () => {
     setImageBase64Data(imageSrc);
   }, [webcamRef]);
 
-  // const verifyProfile = () => {
-  //   document.documentElement.requestFullscreen().then(() => {
-  //     navigate(`/dashboard/exam/${location.state.code}`);
-  //   });
-  // };
   const verifyProfile = async () => {
     const token = localStorage.getItem("token");
-    // console.log(token);
+    console.log(token);
     try {
       const response = await axios.post(
         "http://127.0.0.1:3002/api/v1/student/facelogin",
@@ -37,14 +33,36 @@ const VerifyPhoto = () => {
         }
       );
       console.log(response.data);
-      // navigate("/dashboard");
-      // document.documentElement.requestFullscreen().then(() => {
-      navigate(`/dashboard/exam/${location.state.code}`);
-      // });
+      storeExamDataInLocal();
     } catch (error) {
-      console.error("Registration error:", error.response.data.msg);
-      toast.error(error.response.data.msg)
+      navigate("/dashboard");
+      console.log("Registration error:", error.response.data.msg);
+      toast.error(error.response.data.msg.message);
+    }
+  };
 
+  const storeExamDataInLocal = async () => {
+    const token = localStorage.getItem("token");
+    // console.log(token);
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:3002/api/v1/student/getquestions/${location.state.code}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data);
+      localStorage.setItem("questions", JSON.stringify(response.data.data));
+      document.documentElement.requestFullscreen().then(() => {
+        navigate(`/dashboard/exam/${location.state.code}`, {
+          state: location?.state,
+        });
+      });
+    } catch (error) {
+      console.error("Exam Data Fetching error:", error.response.data.msg);
+      // toast.error(error.response.data.msg);
     }
   };
   return (

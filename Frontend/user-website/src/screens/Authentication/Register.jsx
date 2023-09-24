@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
+
   const [data, setData] = useState({
     name: "",
     email: "",
     phoneno: "",
     password: "",
   });
-
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  });
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
