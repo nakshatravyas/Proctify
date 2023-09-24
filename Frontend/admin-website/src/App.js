@@ -14,6 +14,7 @@ import Home from "./scenes/Home/Home"
 import Register from "./scenes/register/Register" 
 import ForgotPass from "./scenes/forgotpassword/ForgotPass";
 import EditProfile from "./scenes/editprofile/EditProfile";
+import PastExamTable from "./scenes/pastexams/PastExamTable";
 const router = createBrowserRouter([
   {
     path: '/',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Typography, useTheme } from "@mui/material";
-import { Link } from 'react-router-dom'; // Import Link from React Router
+import { Link, Outlet } from 'react-router-dom'; // Import Link from React Router
 import Card from '@mui/material/Card';
 import Header from "../../components/Header";
 import CardContent from '@mui/material/CardContent';
@@ -8,6 +8,7 @@ import ExamDetailsPopup from './ExamDetailsPopup';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
 
 const dummyExams = [
     {
@@ -92,6 +93,7 @@ const dummyExams = [
 
 const PastExams = () => {
     const theme = useTheme();
+    const navigate = useNavigate()
     const [exams, setExams] = useState([]);
     const [error, setError] = useState('');
     const [popupOpen, setPopupOpen] = useState(false);
@@ -104,7 +106,7 @@ const PastExams = () => {
 
     const fetchdata = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:3002/api/v1/admin/getexams?examcode=', {
+            const response = await axios.get('http://127.0.0.1:3002/api/v1/admin/getallexams', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -120,18 +122,20 @@ const PastExams = () => {
     }
 
     const handleViewDetails = (exam) => {
-        setSelectedExam(exam.details);
-        console.log(selectedExam);
+        // navigate(`get_exam_detail/${exam}`)
+        setSelectedExam(exam)
+        console.log(exam);
         setPopupOpen(true);
 
     };
     return (
         <Box m="20px">
             {/* HEADER */}
+            {/* <Outlet> */}
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Header title="Past Exams" subtitle="View logs of past exams" />
             </Box>
-
+            <Outlet/>
             {exams.map((exam) => (
                 <Card
                     key={exam.adminid}
@@ -150,14 +154,14 @@ const PastExams = () => {
                             variant="contained"
                             color="secondary"
                             style={{ marginTop: '16px' }}
-                            onClick={() => handleViewDetails(exam)}
+                            onClick={() => handleViewDetails(exam.examcode)}
                         >
                             View Details
                         </Button>
                     </CardContent>
                 </Card>
             ))}
-
+            {/* </Outlet> */}
             {/* Render the ExamDetailsPopup component when the popupOpen state is true */}
             {popupOpen && selectedExam.length !== 0 && (
                 <ExamDetailsPopup

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   IconButton,
@@ -23,54 +23,75 @@ import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import axios from 'axios';
+import SearchIcon from "@mui/icons-material/Search";
 
+// Define your Dashboard component
 const Dashboard = () => {
+  // Retrieve the token from local storage
+  const token = localStorage.getItem('token');
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [error, setError] = useState('');
+  const [data, setData] = useState([]);
+  const [optionchange, setOptionChange] = useState('');
+  const [options, setOptions] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editedData, setEditedData] = useState({
-    id: null,
-    imageQuestion: false,
-    question: '',
+    questionid: null,
+    description: '',
     options: ['', '', '', ''],
-    correctAnswer: '',
-    imageFile: null,
+    number_of_options: "",
+    answer: '',
+    image: null,
+    examcode: '',
   });
 
-  const data = [
-    {
-      id: 1,
-      imageQuestion: false,
-      question: 'Question 1',
-      options: ['Option A', 'Option B', 'Option C', 'Option D'],
-      correctAnswer: 'Option A',
-    },
-    {
-      id: 2,
-      imageQuestion: true,
-      question: '', // Leave empty for now, as it's an image question
-      options: ['Option A', 'Option B', 'Option C', 'Option D'],
-      correctAnswer: 'Option B',
-      image: 'https://example.com/image1.png',
-    },
-    {
-      id: 3,
-      imageQuestion: false,
-      question: 'Question 3',
-      options: ['Option A', 'Option B', 'Option C', 'Option D'],
-      correctAnswer: 'Option C',
-    },
-    // Add more data as needed
-  ];
+  // Use useEffect to fetch data based on optionchange
+  useEffect(() => {
+    fetchdata();
+  }, [optionchange]);
 
+  // Function to fetch data based on examcode
+  const fetchdata = async () => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:3002/api/v1/admin/getexams?examcode=${optionchange}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      // Set the fetched options in state
+      setOptions(response.data.data);
+    } catch (err) {
+      console.log(err.response.data.msg);
+      setError(err.response.data.msg);
+    }
+  };
+
+  // Function to handle edit button click
   const handleEditClick = (item) => {
     setEditedData(item);
     setEditDialogOpen(true);
   };
 
-  const handleUpdate = () => {
+  // Function to handle question update
+  const handleUpdate = async () => {
     // Log the updated values
-    console.log(editedData);
+    // console.log(editedData);
+    try {
+      const response = await axios.post(`http://127.0.0.1:3002/api/v1/admin/updatequestion`, editedData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      // Set the fetched options in state'
+      console.log(response.data);
+      // setOptions(response.data.data);
+
+    } catch (err) {
+      console.log(err.response.data.msg);
+      setError(err.response.data.msg);
+    }
 
     // Make an API call to update the values
     // axios
@@ -82,9 +103,14 @@ const Dashboard = () => {
     //     console.error('Error updating data:', error);
     //   });
 
+    await fetchdata();
     setEditDialogOpen(false);
+    // useEffect(() => {
+    //   fetchdata();
+    // }, [])
   };
 
+  // Function to handle image upload
   const handleImageUpload = (e) => {
     // Handle image upload here
     const file = e.target.files[0];
@@ -99,24 +125,36 @@ const Dashboard = () => {
     reader.readAsDataURL(file);
   };
 
+  // Function to render the form
   const renderForm = () => {
-    if (editedData.imageQuestion) {
+    if (editedData.image) {
       return (
         <div>
           {/* Actual image upload component */}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
+          <img
+            src={editedData.image}
+            alt="Question"
+            style={{ maxWidth: '55%', marginTop: '16px' }}
           />
-          {editedData.imageFile && (
-            <img
-              src={editedData.image}
-              alt="Question"
-              style={{ maxWidth: '100%', marginTop: '16px' }}
+          {editedData.image ? (
+            <Button type="submit" color="secondary" variant="contained" onClick={removeimage}>
+              Remove
+            </Button>
+          ) : (
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ margin: '16px 0' }} // Add margin
             />
           )}
-
+          <TextField
+            label="Question"
+            fullWidth
+            value={editedData.description}
+            onChange={(e) => setEditedData({ ...editedData, description: e.target.value })}
+            style={{ marginBottom: '16px' }}
+          />
           {/* Options for image questions */}
           {editedData.options.map((option, index) => (
             <div key={index}>
@@ -131,15 +169,16 @@ const Dashboard = () => {
                 }}
                 style={{ marginBottom: '16px' }}
               />
+              {index < editedData.options.length - 1 && <Divider />} {/* Add divider */}
             </div>
           ))}
 
           <TextField
             label="Correct Answer"
             fullWidth
-            value={editedData.correctAnswer}
+            value={editedData.answer}
             onChange={(e) =>
-              setEditedData({ ...editedData, correctAnswer: e.target.value })
+              setEditedData({ ...editedData, answer: e.target.value })
             }
             style={{ marginTop: '16px' }}
           />
@@ -148,10 +187,16 @@ const Dashboard = () => {
     } else {
       return (
         <div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ margin: '16px 0' }} // Add margin
+          />
           <TextField
             label="Question"
             fullWidth
-            value={editedData.question}
+            value={editedData.description}
             onChange={(e) => setEditedData({ ...editedData, question: e.target.value })}
             style={{ marginBottom: '16px' }}
           />
@@ -168,14 +213,15 @@ const Dashboard = () => {
                 }}
                 style={{ marginBottom: '16px' }}
               />
+              {index < editedData.options.length - 1 && <Divider />} {/* Add divider */}
             </div>
           ))}
           <TextField
             label="Correct Answer"
             fullWidth
-            value={editedData.correctAnswer}
+            value={editedData.answer}
             onChange={(e) =>
-              setEditedData({ ...editedData, correctAnswer: e.target.value })
+              setEditedData({ ...editedData, answer: e.target.value })
             }
             style={{ marginTop: '16px' }}
           />
@@ -184,43 +230,119 @@ const Dashboard = () => {
     }
   };
 
+  // Function to handle exam code change
+  const change = (e) => {
+    setOptionChange(e.target.value);
+  };
+
+  // Function to search for questions based on exam code
+  const searchquestion = async () => {
+    try {
+      console.log(optionchange);
+      const response = await axios.get(`http://127.0.0.1:3002/api/v1/admin/getquestions/${optionchange}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log(response.data.data);
+      setData(response.data.data);
+    } catch (err) {
+      console.log(err.response.data.msg);
+    }
+  };
+
+  // Function to remove the uploaded image
+  const removeimage = () => {
+    setEditedData({ ...editedData, image: null });
+  };
+
+  const deletequestion = async (id) => {
+    try {
+      console.log(optionchange);
+      const response = await axios.delete(`http://127.0.0.1:3002/api/v1/admin/deletequestion/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log(response.data);
+      // setData(response.data.data);
+    } catch (err) {
+      console.log(err.response.data.msg);
+    }
+  }
+
   return (
     <Box m="20px">
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="View Questions" subtitle="Update or Delete questions" />
       </Box>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Questions</TableCell>
-              <TableCell align="right">Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.question || 'Image Question'}</TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    aria-label="Edit"
-                    color="secondary"
-                    onClick={() => handleEditClick(item)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton aria-label="Delete" color="secondary">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap="10px"
+        pt="10px"
+        mb="20px"
+      >
+        <Typography component="h1" variant="h3">
+          Enter Exam Code
+        </Typography>
+        <input
+          style={{
+            backgroundColor: '#1F2A40',
+            color: "white",
+            borderRadius: "3px",
+            width: "20rem",
+            padding: "10px",
+            border: "none",
+          }}
+          list="dataa"
+          onChange={change}
+          placeholder="Search"
+        />
+        <datalist id="dataa">
+          {options.map((op) => <option key={op}>{op}</option>)}
+        </datalist>
+        <IconButton type="button" sx={{ p: 1 }} onClick={searchquestion}>
+          <SearchIcon />
+        </IconButton>
+      </Box>
+      {data.length !== 0 ? (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Questions</TableCell>
+                <TableCell align="right">Action</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {data.map((item) => (
+                <TableRow key={item.questionid}>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      aria-label="Edit"
+                      color="secondary"
+                      onClick={() => handleEditClick(item)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton aria-label="Delete" color="secondary" onClick={() => deletequestion(item.questionid)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        ""
+      )}
 
+      {/* Dialog for editing question */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} fullWidth>
         <DialogTitle>Edit Question</DialogTitle>
         <DialogContent>

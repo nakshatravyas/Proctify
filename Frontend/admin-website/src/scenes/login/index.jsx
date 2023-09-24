@@ -92,10 +92,15 @@ export default function SignIn() {
                         >
                             Sign In
                         </Button>
-                        <Grid container>
+                        <Grid container justifyContent="space-between">
                             <Grid item>
                                 <Link href="/register" variant="body2">
                                     {"New User? Register Yourself"}
+                                </Link>
+                            </Grid>
+                            <Grid item>
+                                <Link href="/forgotpassword" variant="body2">
+                                    {"Forgot Password?"}
                                 </Link>
                             </Grid>
                         </Grid>

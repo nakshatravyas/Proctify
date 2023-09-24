@@ -9,8 +9,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 
 const defaultTheme = createTheme();
 
@@ -120,14 +118,7 @@ export default function Register() {
                         >
                             Register
                         </Button>
-                        <Grid container>
-
-                            <Grid item>
-                                <Link href="/forgotpassword" variant="body2">
-                                    {"Forgot Password?"}
-                                </Link>
-                            </Grid>
-                        </Grid>
+                        
                     </Box>
                     <Typography component="h1" variant="h5" color="red">
                         {error}
