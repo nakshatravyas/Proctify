@@ -216,7 +216,16 @@ const createFromExistingExam = async(req,res)=>{
   //copying questions of the refernce exam into new exam
   const examquestions = await pool.query(`select * from questions where examcode = '${examcode}';`);
   for(let i=0;i<examquestions.rows.length;++i){
-    const newentry = await pool.query(`insert into questions(examcode,image,description,number_of_options,options,answer) values('${newexamcode}','${examquestions.rows[i]?.image}','${examquestions.rows[i].description}',${examquestions.rows[i].number_of_options},array[${[...examquestions.rows[i].options]}],${examquestions.rows[i].answer});`)
+    let options_str = 'array['
+    for(let j=0;j<examquestions.rows[i].options.length;++j){
+      options_str+=`'${examquestions.rows[i].options[j]}'`
+      if(j!=examquestions.rows[i].options.length-1){
+        options_str+=','
+      }
+    }
+    options_str+=']'
+    const newentry = await pool.query(`insert into questions(examcode,image,description,number_of_options,options,answer) values('${newexamcode}','${examquestions.rows[i]?.image}','${examquestions.rows[i].description}',${examquestions.rows[i].number_of_options},${options_str},${examquestions.rows[i].answer});`)
+    options_str=''
   }
   //copying threshold value of the refernce exam into new exam
   const oldthreshold = await pool.query(`select * from threshold where examcode like '${examcode}';`)
