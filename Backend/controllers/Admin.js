@@ -301,6 +301,10 @@ const getThresholdValueOfAllStudentsExamWise = async(req,res)=>{
   if(checkexamcode.rowCount == 0){
     throw new BadRequestError("Please provide valid examcode");
   }
+  const isexamdone = await pool.query(`select * from student_threshold where examcode = '${examcode}';`)
+  if(isexamdone.rowCount == 0){
+    throw new BadRequestError("There are no logs available");
+  }
   const response = await pool.query(`select s.name,t.system_warnings,t.mobile_detected,t.cv_based_warnings,t.noise_warnings from student as s inner join student_threshold as t on s.sid = t.sid where examcode = '${examcode}';`)
   res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
 }
