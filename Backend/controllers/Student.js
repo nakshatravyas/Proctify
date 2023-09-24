@@ -297,13 +297,13 @@ const canGiveExam = async (req, res) => {
   const currentTime = `${hours}:${minutes}:${seconds}`;
   const response = await pool.query(
     `select * from exam where startdate = '${yourDate.toISOString().split("T")[0]
-    }' and starttime<='${currentTime}' and endtime>='${currentTime}';`
+    }' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
   if (response.rowCount == 0) {
     throw new BadRequestError("Check the exam schedule and try again");
   }
   const studentappeared = await pool.query(
-    `select * from result where sid = ${studentId};`
+    `select * from result where sid = ${studentId} and examcode = '${examcode}';`
   );
   if (studentappeared.rowCount == 1) {
     throw new BadRequestError("You have already attempted this test.");
