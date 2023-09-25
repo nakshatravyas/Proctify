@@ -8,14 +8,19 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (!token) {
+      if (location.pathname !== "/register") {
+        navigate("/");
+      }
       setLogin(false);
-      navigate("/");
     } else {
-      setLogin(true);
+      if (location.pathname === "/register" || location.pathname === "/") {
+        setLogin(true);
+        navigate("/dashboard");
+      }
     }
-  }, [navigate]);
+  }, [location.pathname, navigate]);
 
   const logoutHandler = () => {
     localStorage.removeItem("token");

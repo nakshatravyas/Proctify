@@ -17,6 +17,7 @@ import VerifyPhoto from "../screens/Dashboard/Checking/VerifyPhoto";
 import RegisterProfile from "../screens/Authentication/RegisterProfile";
 import VerifyOtp from "../screens/Authentication/VerifyOtp";
 import ChangePassword from "../screens/Authentication/ChangePassword";
+import FinishExam from "../screens/Dashboard/FinishExam";
 const App = () => {
   return (
     <BrowserRouter>
@@ -37,6 +38,7 @@ const App = () => {
         <Route path="/dashboard/instructions" element={<Instructions />} />
         <Route path="/dashboard/checking" element={<PermissionCheck />} />
         <Route path="/dashboard/verify" element={<VerifyPhoto />} />
+        <Route path="/dashboard/exam/completed" element={<FinishExam />} />
       </Routes>
       <Toaster position="bottom-center" />
     </BrowserRouter>

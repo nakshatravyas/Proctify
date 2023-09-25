@@ -9,14 +9,18 @@ const Login = () => {
     email: "",
     password: "",
   });
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/dashboard");
-    }
-  });
+
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { email } = data;
+    if (!emailRegex.test(email)) {
+      toast.dismiss();
+      toast.error("Invalid email address");
+      return;
+    }
+    toast.loading("Logging In...");
     try {
       const response = await axios.post(
         `http://127.0.0.1:3002/api/v1/student/login`,
@@ -24,16 +28,14 @@ const Login = () => {
       );
       console.log(response.data.token);
       localStorage.setItem("token", response.data.token);
+      toast.dismiss();
       toast.success("Login successful!");
       navigate("/dashboard");
     } catch (err) {
+      toast.dismiss();
       console.log(err.response.data.msg);
       toast.error(err.response.data.msg);
     }
-    // if (!data.email || !data.password) {
-    //   toast.error("Email and password are required");
-    //   return;
-    // }
     setData({
       email: "",
       password: "",
