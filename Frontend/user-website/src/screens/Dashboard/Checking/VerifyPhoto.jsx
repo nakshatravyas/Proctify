@@ -65,11 +65,11 @@ const VerifyPhoto = () => {
       );
       console.log(response.data);
       localStorage.setItem("questions", JSON.stringify(response.data.data));
-      document.documentElement.requestFullscreen().then(() => {
+      // document.documentElement.requestFullscreen().then(() => {
         navigate(`/dashboard/exam/${location.state.code}`, {
           state: location?.state,
         });
-      });
+      // });
     } catch (error) {
       console.error("Exam Data Fetching error:", error.response.data.msg);
       // toast.error(error.response.data.msg);

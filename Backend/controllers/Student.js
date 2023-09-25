@@ -18,6 +18,7 @@ const {
 } = require("../utils/rekognition");
 const { uploadImageToS3 } = require("../utils/s3");
 const { registerFaceWithRekognition } = require("../utils/rekognition");
+const moment = require("moment");
 //utility
 function shuffle(array) {
   let currentIndex = array.length,
@@ -296,13 +297,12 @@ const canGiveExam = async (req, res) => {
   const check = yourDate
     .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
     .split(",")[0];
-  var myDate = new Date(check);
-  var d = myDate.getDate();
-  var m = myDate.getMonth();
-  m += 1;
-  var y = myDate.getFullYear();
 
-  var newdate = y + "-" + m + "-" + d;
+  // Input date in 'dd/mm/yyyy' format
+  const inputDateStr = `'${check}'`;
+
+  // Parse the input date and format it as 'yyyy-mm-dd'
+  const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
 
   // Get the current hour, minute, and second
   const hours = yourDate.getHours().toString().padStart(2, "0");
@@ -311,11 +311,8 @@ const canGiveExam = async (req, res) => {
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
-  console.log(
-    `select * from exam where startdate = '${check}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
-  );
   const response = await pool.query(
-    `select * from exam where startdate = '${newdate}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
+    `select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
   if (response.rowCount == 0) {
     throw new BadRequestError("Check the exam schedule and try again");

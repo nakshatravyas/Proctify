@@ -28,7 +28,7 @@ const Exam = () => {
         setExamCode("");
       } catch (error) {
         setLoading(false);
-        toast.error(error);
+        toast.error(error.response.data.msg);
       }
     }
   };

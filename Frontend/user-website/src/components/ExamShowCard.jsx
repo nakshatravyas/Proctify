@@ -8,15 +8,15 @@ const ExamShowCard = (props) => {
     e.preventDefault();
     if (props.data.code) {
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `http://127.0.0.1:3002/api/v1/student/cangiveexam/${props.data.code}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        // const token = localStorage.getItem("token");
+        // const response = await axios.get(
+        //   `http://127.0.0.1:3002/api/v1/student/cangiveexam/${props.data.code}`,
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${token}`,
+        //     },
+        //   }
+        // );
         navigate(`/dashboard/instructions`, {
           state: {
             code: props.data.code,
