@@ -8,7 +8,7 @@ const ExamCard = (props) => {
   const questions = JSON.parse(localStorage.getItem("questions"));
   const [selectedOption, setSelectedOption] = useState(null);
   const [timer, setTimer] = useState(props.duration * 60);
-const navigate = useNavigate()
+  const navigate = useNavigate();
   const submitAnswerHandler = () => {
     let updatedQuestions = [...questions];
     updatedQuestions[quePointer].selectedoption = selectedOption;
@@ -20,15 +20,15 @@ const navigate = useNavigate()
   const submitQuizHandler = () => {
     clearInterval(timer);
     const check1 = () => {
-        console.log("Hello 1");
-        localStorage.setItem("Hello", "Not Done");
-        const event = new StorageEvent("storage", {
-          key: "test1",
-        });
-        window.dispatchEvent(event);
-      };
-      check1();
-    navigate("/dashboard")
+      console.log("Hello 1");
+      localStorage.setItem("Hello", "Not Done");
+      const event = new StorageEvent("storage", {
+        key: "test1",
+      });
+      window.dispatchEvent(event);
+    };
+    check1();
+    navigate("/dashboard/exam/completed");
     // alert("Quiz Completed");
   };
 
