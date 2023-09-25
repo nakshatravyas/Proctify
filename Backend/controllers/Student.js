@@ -294,6 +294,13 @@ const canGiveExam = async (req, res) => {
   }
   let yourDate = new Date();
   const check=yourDate.toLocaleString(undefined, { timeZone: 'Asia/Kolkata' }).split(",")[0]
+  var myDate = new Date(check);
+  var d = myDate.getDate();
+  var m =  myDate.getMonth();
+  m += 1;  
+  var y = myDate.getFullYear();
+
+  var newdate=(y+ "-" + m + "-" + d);
 
   // Get the current hour, minute, and second
   const hours = yourDate.getHours().toString().padStart(2, "0");
@@ -303,7 +310,7 @@ const canGiveExam = async (req, res) => {
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
   const response = await pool.query(
-    `select * from exam where startdate = '${check}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
+    `select * from exam where startdate = '${newdate}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
   if (response.rowCount == 0) {
     throw new BadRequestError("Check the exam schedule and try again");
