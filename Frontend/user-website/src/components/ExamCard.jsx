@@ -18,6 +18,15 @@ const ExamCard = (props) => {
 
   const submitQuizHandler = () => {
     clearInterval(timer);
+    const check1 = () => {
+        console.log("Hello 1");
+        localStorage.setItem("Hello", "Not Done");
+        const event = new StorageEvent("storage", {
+          key: "test1",
+        });
+        window.dispatchEvent(event);
+      };
+      check1();
     alert("Quiz Completed");
   };
 

@@ -33,7 +33,17 @@ const VerifyPhoto = () => {
         }
       );
       console.log(response.data);
+
       storeExamDataInLocal();
+       const check = () => {
+        console.log("Hello");
+        localStorage.setItem("Hello", "Done");
+        const event = new StorageEvent("storage", {
+          key: "test",
+        });
+        window.dispatchEvent(event);
+      };
+      check();
     } catch (error) {
       navigate("/dashboard");
       console.log("Registration error:", error.response.data.msg);
