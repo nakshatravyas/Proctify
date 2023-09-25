@@ -311,6 +311,9 @@ const canGiveExam = async (req, res) => {
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
+  const resp = await pool.query(
+    `select * from exam where examcode='${examcode}';`
+  );
   const response = await pool.query(
     `select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
