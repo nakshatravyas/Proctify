@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const e = require("express");
+const moment = require('moment')
 
 //authentication owner
 const registerAdmin = async (req, res) => {
@@ -140,12 +141,29 @@ const updateAdminDetails = async(req,res)=>{
 
 const createNewExam = async(req,res)=>{
   const {adminId} = req.user
-  const {startdate,starttime,endtime,duration,exam_name,mode,negative_marks,question_weightage,isRandom}=req.body
-  if(!startdate || !starttime || !endtime || !duration || !exam_name || !mode || !negative_marks || !question_weightage){
+  const {startdate,starttime,endtime,duration,exam_name,mode,negative_marks,question_weightage,isRandom,details,last_registeration_date}=req.body
+  if(!startdate || !starttime || !endtime || !duration || !exam_name || !mode || !negative_marks || !question_weightage || !details || !last_registeration_date){
     throw new BadRequestError("Please provide required details");
   }
+  const currstartdate = new Date(startdate)
+  const start_date = currstartdate.getDate()
+  let start_month = currstartdate.getMonth()
+  start_month += 1
+  const start_year = currstartdate.getFullYear()
+
+  const currregistrationdate = new Date(last_registeration_date)
+  const registration_date = currregistrationdate.getDate()
+  let registration_month = currregistrationdate.getMonth()
+  registration_month += 1
+  const registration_year = currregistrationdate.getFullYear()
+
+  if(registration_year > start_year || (registration_year == start_year && registration_date>start_date && registration_month>=start_month)){
+    throw new BadRequestError("Registration date should not exceed starting date of exam")
+  }
+
   const examcode = Math.random().toString(36).substr(9,32)
-  const response = await pool.query(`insert into exam values(${adminId},'${examcode}','${startdate}','${starttime}','${endtime}',${duration},'${exam_name}','${mode}',${negative_marks},${question_weightage},false,${isRandom});`)
+  const detail = JSON.stringify(details)
+  const response = await pool.query(`insert into exam values(${adminId},'${examcode}','${startdate}','${starttime}','${endtime}',${duration},'${exam_name}','${mode}',${negative_marks},${question_weightage},false,${isRandom},'${detail}','${last_registeration_date}');`)
   res.status(StatusCodes.OK).json({res:"Success",examcode})
 }
 
@@ -212,7 +230,18 @@ const createFromExistingExam = async(req,res)=>{
     throw new BadRequestError("Please provide valid examcode");
   }
   const newexamcode = Math.random().toString(36).substr(9,32)
-  const inserted_response = await pool.query(`insert into exam values(${adminId},'${newexamcode}','${startdate}','${starttime}','${endtime}',${response.rows[0].duration},'${response.rows[0].exam_name}','${response.rows[0].mode}',${response.rows[0].negative_marks},${response.rows[0].question_weightage},${response.rows[0].publish_result},${response.rows[0].israndom});`)
+  let yourDate = new Date(response.rows[0].last_registeration_date);
+  const check = yourDate
+    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+    .split(",")[0];
+
+  // Input date in 'dd/mm/yyyy' format
+  const inputDateStr = `'${check}'`;
+
+  // Parse the input date and format it as 'yyyy-mm-dd'
+  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+
+  const inserted_response = await pool.query(`insert into exam values(${adminId},'${newexamcode}','${startdate}','${starttime}','${endtime}',${response.rows[0].duration},'${response.rows[0].exam_name}','${response.rows[0].mode}',${response.rows[0].negative_marks},${response.rows[0].question_weightage},${response.rows[0].publish_result},${response.rows[0].israndom},'${response.rows[0].details}','${outputDateStr}');`)
   //copying questions of the refernce exam into new exam
   const examquestions = await pool.query(`select * from questions where examcode = '${examcode}';`);
   for(let i=0;i<examquestions.rows.length;++i){
@@ -229,7 +258,9 @@ const createFromExistingExam = async(req,res)=>{
   }
   //copying threshold value of the refernce exam into new exam
   const oldthreshold = await pool.query(`select * from threshold where examcode like '${examcode}';`)
-  const newthreshold = await pool.query(`insert into threshold values('${newexamcode}',${oldthreshold.rows[0].system_warnings},${oldthreshold.rows[0].mobile_detected},${oldthreshold.rows[0].cv_based_warnings},${oldthreshold.rows[0].noise_warnings});`)
+  if(oldthreshold.rowCount==1){
+    const newthreshold = await pool.query(`insert into threshold values('${newexamcode}',${oldthreshold.rows[0].system_warnings},${oldthreshold.rows[0].mobile_detected},${oldthreshold.rows[0].cv_based_warnings},${oldthreshold.rows[0].noise_warnings});`)
+  }
   res.status(StatusCodes.OK).json({res:"Success",examcode:newexamcode})
 }
 
@@ -319,9 +350,94 @@ const publishResult = async(req,res)=>{
   res.status(StatusCodes.OK).json({res:"Success"})
 }
 
-const getExamsByAdmin = async(req,res)=>{
+const getPastExamsByAdmin = async(req,res)=>{
   const {adminId} = req.user
-  const response = await pool.query(`select * from exam where adminid = ${adminId};`)
+  let yourDate = new Date();
+  const check = yourDate
+    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+    .split(",")[0];
+
+  // Input date in 'dd/mm/yyyy' format
+  const inputDateStr = `'${check}'`;
+
+  // Parse the input date and format it as 'yyyy-mm-dd'
+  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+
+  // Get the current hour, minute, and second
+  const hours = yourDate.getHours().toString().padStart(2, "0");
+  const minutes = yourDate.getMinutes().toString().padStart(2, "0");
+  const seconds = yourDate.getSeconds().toString().padStart(2, "0");
+
+  // Create the time string in hh:mm:ss format
+  const currentTime = `${hours}:${minutes}:${seconds}`;
+  const response = await pool.query(`select * from exam where adminid = ${adminId} and startdate<'${outputDateStr}' or (startdate='${outputDateStr}' and endtime<'${currentTime}'); `)
+  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+}
+
+const getNewExamsByAdmin = async(req,res)=>{
+  const {adminId} = req.user
+  let yourDate = new Date();
+  const check = yourDate
+    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+    .split(",")[0];
+
+  // Input date in 'dd/mm/yyyy' format
+  const inputDateStr = `'${check}'`;
+
+  // Parse the input date and format it as 'yyyy-mm-dd'
+  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+
+  // Get the current hour, minute, and second
+  const hours = yourDate.getHours().toString().padStart(2, "0");
+  const minutes = yourDate.getMinutes().toString().padStart(2, "0");
+  const seconds = yourDate.getSeconds().toString().padStart(2, "0");
+
+  // Create the time string in hh:mm:ss format
+  const currentTime = `${hours}:${minutes}:${seconds}`;
+  const response = await pool.query(`select * from exam where adminid = ${adminId} and startdate>'${outputDateStr}' or (startdate='${outputDateStr}' and endtime>'${currentTime}'); `)
+  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+}
+
+const deleteExam = async(req,res)=>{
+  const {examcode} = req.params
+  const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
+  if(checkexamcode.rowCount == 0){
+    throw new BadRequestError("Please provide valid examcode");
+  }
+  //delete exam from exam table
+  const deleteexam = await pool.query(`delete from exam where examcode = '${examcode}';`)
+  //delete questions
+  const deletequestions = await pool.query(`delete from questions where examcode = '${examcode}';`)
+  //delete threshold
+  const deletethreshold = await pool.query(`delete from threshold where examcode = '${examcode}';`)
+  //delete student threshold value
+  const deletestudentthreshold = await pool.query(`delete from student_threshold where examcode = '${examcode}';`)
+  //delete registered students
+  const deleteregisteredstudents = await pool.query(`delete from registered_exams where examcode = '${examcode}';`)
+  //delete result
+  const deleteresult = await pool.query(`delete from result where examcode = '${examcode}';`) 
+  res.status(StatusCodes.OK).json({res:"Success"})
+}
+
+const updateExam = async(req,res)=>{
+  const {examcode} = req.params
+  const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
+  if(checkexamcode.rowCount == 0){
+    throw new BadRequestError("Please provide valid examcode");
+  }
+  req.body.details = JSON.stringify(req.body.details)
+  const response = await pool.query(`update exam set startdate = '${req.body.startdate}',starttime = '${req.body.starttime}',endtime = '${req.body.endtime}',duration = ${Number(req.body.duration)},exam_name='${req.body.exam_name}',mode='${req.body.mode}',negative_marks=${Number(req.body.negative_marks)},question_weightage=${Number(req.body.question_weightage)},israndom=${req.body.israndom},details='${req.body.details}',last_registeration_date='${req.body.last_registeration_date}' where examcode = '${examcode}';`)
+  res.status(StatusCodes.OK).json({res:"Success"})
+}
+
+const getRegisteredStudents = async(req,res)=>{
+  const {adminId} = req.user
+  const {examcode} = req.params
+  const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
+  if(checkexamcode.rowCount == 0){
+    throw new BadRequestError("Please provide valid examcode");
+  }
+  const response = await pool.query(`select s.name,s.email,s.phoneno,r.student_details from registered_exams as r inner join student as s on r.sid = s.sid where r.examcode = '${examcode}';`)
   res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
 }
 
@@ -346,5 +462,9 @@ module.exports = {
   setStudentThreshold,
   getThresholdValueOfAllStudentsExamWise,
   publishResult,
-  getExamsByAdmin
+  getNewExamsByAdmin,
+  getPastExamsByAdmin,
+  deleteExam,
+  updateExam,
+  getRegisteredStudents
 }

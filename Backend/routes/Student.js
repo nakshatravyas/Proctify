@@ -71,7 +71,7 @@ router.route("/facelogin").post(studentMiddleware, faceLogin);
 router.route("/faceregister").post(studentMiddleware, faceRegister);
 
 //register exam
-router.route("/registerexam/:examcode").get(studentMiddleware, registerExam);
+router.route("/registerexam/:examcode").post(studentMiddleware, registerExam);
 
 //get exams registered by student but not given by student
 router.route("/getregisteredexam").get(studentMiddleware, getRegisteredExam);

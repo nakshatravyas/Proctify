@@ -302,7 +302,7 @@ const canGiveExam = async (req, res) => {
   const inputDateStr = `'${check}'`;
 
   // Parse the input date and format it as 'yyyy-mm-dd'
-  const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
+  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
 
   // Get the current hour, minute, and second
   const hours = yourDate.getHours().toString().padStart(2, "0");
@@ -311,15 +311,18 @@ const canGiveExam = async (req, res) => {
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
-  const resp = await pool.query(
-    `select * from exam where examcode='${examcode}';`
-  );
   const response = await pool.query(
     `select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
   if (response.rowCount == 0) {
     throw new BadRequestError("Check the exam schedule and try again");
   }
+  //check whether student is registered or not
+  const studentregistered = await pool.query(`select * from registered_exams where examcode='${examcode}' and sid = ${studentId};`)
+  if(studentregistered.rowCount == 0){
+    throw new BadRequestError("You are not registered for this exam")
+  }
+  //check whether student has appeared or not
   const studentappeared = await pool.query(
     `select * from result where sid = ${studentId} and examcode = '${examcode}';`
   );
@@ -450,8 +453,9 @@ const getExamDetails = async (req, res) => {
 const registerExam = async (req, res) => {
   const { studentId } = req.user;
   const { examcode } = req.params;
+  const data = JSON.stringify(req.body)
   const response = await pool.query(
-    `insert into registered_exams values(${studentId},'${examcode}');`
+    `insert into registered_exams values(${studentId},'${examcode}','${data}');`
   );
   res.status(StatusCodes.OK).json({ res: "Success" });
 };
@@ -485,12 +489,12 @@ const getAllExams = async (req, res) => {
   const inputDateStr = `'${check}'`;
 
   // Parse the input date and format it as 'yyyy-mm-dd'
-  const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
+  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const response = await pool.query(
     `SELECT e.examcode, e.startdate, e.starttime, e.endtime
 FROM exam e
 LEFT JOIN registered_exams rs ON e.examcode = rs.examcode
-WHERE e.startdate >= '${outputDateStr}' AND (rs.sid IS NULL OR rs.sid != ${studentId});
+WHERE e.last_registeration_date >= '${outputDateStr}' AND (rs.sid IS NULL OR rs.sid != ${studentId});
 `
   );
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows });

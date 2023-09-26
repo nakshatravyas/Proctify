@@ -22,7 +22,11 @@ const {
   setStudentThreshold,
   getThresholdValueOfAllStudentsExamWise,
   publishResult,
-  getExamsByAdmin
+  getPastExamsByAdmin,
+  getNewExamsByAdmin,
+  deleteExam,
+  updateExam,
+  getRegisteredStudents
 } = require("../controllers/Admin");
 
 const adminMiddleware = require("../middleware/authentication_admin");
@@ -75,7 +79,20 @@ router
 //publish result
 router.route("/publishresult/:examcode").get(adminMiddleware, publishResult);
 
-//get exam created by particular admin - it will return array of object
-router.route("/getallexams").get(adminMiddleware,getExamsByAdmin)
+//get all the past exam created by particular admin - it will return array of object
+router.route("/getallpastexams").get(adminMiddleware,getPastExamsByAdmin)
+
+//get all the past exam created by particular admin - it will return array of object
+router.route("/getallnewexams").get(adminMiddleware,getNewExamsByAdmin)
+
+//delete exam based on examcode
+router.route("/deleteexam/:examcode").delete(adminMiddleware,deleteExam)
+
+//update exam
+router.route("/updateexam/:examcode").post(adminMiddleware,updateExam)
+
+//get all the registered students
+router.route("/getregisteredstudent/:examcode").get(adminMiddleware,getRegisteredStudents)
+
 
 module.exports = router;
