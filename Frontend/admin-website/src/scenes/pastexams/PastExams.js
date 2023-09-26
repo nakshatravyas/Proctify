@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Typography } from "@mui/material";
-import {  Outlet } from 'react-router-dom'; // Import Link from React Router
+import { Outlet } from 'react-router-dom'; // Import Link from React Router
 import Card from '@mui/material/Card';
 import Header from "../../components/Header";
 import CardContent from '@mui/material/CardContent';
@@ -50,11 +50,12 @@ const PastExams = () => {
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Header title="Past Exams" subtitle="View logs of past exams" />
             </Box>
-            <Outlet/>
+            <Outlet />
             {exams.map((exam) => (
                 <Card
+                    elevation={4}
                     key={exam.adminid}
-                    style={{ backgroundColor: '#e0e0e0', marginBottom: '16px' }}
+                    style={{ marginBottom: '16px' }}
                 >
                     <CardContent>
                         <Typography variant="h5" component="div" color="black" fontWeight="bold">

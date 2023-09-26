@@ -18,6 +18,7 @@ const {
 } = require("../utils/rekognition");
 const { uploadImageToS3 } = require("../utils/s3");
 const { registerFaceWithRekognition } = require("../utils/rekognition");
+const moment = require("moment");
 //utility
 function shuffle(array) {
   let currentIndex = array.length,
@@ -293,14 +294,15 @@ const canGiveExam = async (req, res) => {
     throw new BadRequestError("Please provide valid examcode");
   }
   let yourDate = new Date();
-  const check=yourDate.toLocaleString(undefined, { timeZone: 'Asia/Kolkata' }).split(",")[0]
-  var myDate = new Date(check);
-  var d = myDate.getDate();
-  var m =  myDate.getMonth();
-  m += 1;  
-  var y = myDate.getFullYear();
+  const check = yourDate
+    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+    .split(",")[0];
 
-  var newdate=(y+ "-" + m + "-" + d);
+  // Input date in 'dd/mm/yyyy' format
+  const inputDateStr = `'${check}'`;
+
+  // Parse the input date and format it as 'yyyy-mm-dd'
+  const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
 
   // Get the current hour, minute, and second
   const hours = yourDate.getHours().toString().padStart(2, "0");
@@ -309,8 +311,11 @@ const canGiveExam = async (req, res) => {
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
+  const resp = await pool.query(
+    `select * from exam where examcode='${examcode}';`
+  );
   const response = await pool.query(
-    `select * from exam where startdate = '${newdate}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
+    `select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
   if (response.rowCount == 0) {
     throw new BadRequestError("Check the exam schedule and try again");
@@ -454,10 +459,17 @@ const registerExam = async (req, res) => {
 const getRegisteredExam = async (req, res) => {
   const { studentId } = req.user;
   let yourDate = new Date();
+  const check = yourDate
+    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+    .split(",")[0];
+
+  // Input date in 'dd/mm/yyyy' format
+  const inputDateStr = `'${check}'`;
+
+  // Parse the input date and format it as 'yyyy-mm-dd'
+  const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
   const response = await pool.query(
-    `select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${
-      yourDate.toISOString().split("T")[0]
-    }';`
+    `select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${outputDateStr}';`
   );
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows });
 };
@@ -465,10 +477,21 @@ const getRegisteredExam = async (req, res) => {
 const getAllExams = async (req, res) => {
   const { studentId } = req.user;
   let yourDate = new Date();
+  const check = yourDate
+    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+    .split(",")[0];
+
+  // Input date in 'dd/mm/yyyy' format
+  const inputDateStr = `'${check}'`;
+
+  // Parse the input date and format it as 'yyyy-mm-dd'
+  const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
   const response = await pool.query(
-    `select * from exam as e full outer join registered_exams as r on e.examcode = r.examcode where e.startdate>='${
-      yourDate.toISOString().split("T")[0]
-    }' and r.sid!=${studentId} ;`
+    `SELECT e.examcode, e.startdate, e.starttime, e.endtime
+FROM exam e
+LEFT JOIN registered_exams rs ON e.examcode = rs.examcode
+WHERE e.startdate >= '${outputDateStr}' AND (rs.sid IS NULL OR rs.sid != ${studentId});
+`
   );
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows });
 };

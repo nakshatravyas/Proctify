@@ -7,7 +7,7 @@ export default function DisableElevation() {
     <div className="container">
       <div class="home">
         <h1 style={{margin:"0px",fontSize:"3rem",color:"black"}}>Proctify</h1>
-        <p id='tagline'>Lets catch the cheater m*therfucker</p>
+        {/* <p id='tagline'>Lets catch the cheater m*therfucker</p> */}
         <button className='btn_login' id='login' onClick={e => navigate('/login')}>Login</button>
         <button className='btn_login'onClick={e => navigate('/register')}>Register</button>
       </div>

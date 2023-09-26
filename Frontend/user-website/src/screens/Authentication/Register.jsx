@@ -12,12 +12,12 @@ const Register = () => {
     phoneno: "",
     password: "",
   });
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     navigate("/dashboard");
-  //   }
-  // });
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  });
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

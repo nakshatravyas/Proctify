@@ -1,13 +1,14 @@
 import { Player } from "@lottiefiles/react-lottie-player";
 import React, { useEffect, useState } from "react";
 import OptionCard from "./OptionCard";
+import { useNavigate } from "react-router";
 
 const ExamCard = (props) => {
   const [quePointer, setQuePointer] = useState(0);
   const questions = JSON.parse(localStorage.getItem("questions"));
   const [selectedOption, setSelectedOption] = useState(null);
   const [timer, setTimer] = useState(props.duration * 60);
-
+  const navigate = useNavigate();
   const submitAnswerHandler = () => {
     let updatedQuestions = [...questions];
     updatedQuestions[quePointer].selectedoption = selectedOption;
@@ -18,7 +19,17 @@ const ExamCard = (props) => {
 
   const submitQuizHandler = () => {
     clearInterval(timer);
-    alert("Quiz Completed");
+    const check1 = () => {
+      console.log("Hello 1");
+      localStorage.setItem("Hello", "Not Done");
+      const event = new StorageEvent("storage", {
+        key: "test1",
+      });
+      window.dispatchEvent(event);
+    };
+    check1();
+    navigate("/dashboard/exam/completed");
+    // alert("Quiz Completed");
   };
 
   useEffect(() => {
