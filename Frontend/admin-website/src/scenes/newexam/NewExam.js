@@ -1,4 +1,4 @@
-import { Box, Button, TextField,Typography } from "@mui/material";
+import { Box, Button, TextField, Typography, Divider, Grid, Paper, MenuItem, IconButton, } from "@mui/material";
 import Header from "../../components/Header";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -13,6 +13,8 @@ import FormLabel from '@mui/material/FormLabel';
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 
 const NewExam = () => {
@@ -27,6 +29,7 @@ const NewExam = () => {
     mode: "",
     isRandom: "",
   })
+  const [formData, setFormData] = useState([{ field1: '', fieldType: 'text' },]);
   const [examcode, setExamCode] = useState('')
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -56,15 +59,40 @@ const NewExam = () => {
       toast.error(err.response.data.msg)
     }
   }
+
+  const handleAddFieldSet = () => {
+    setFormData([...formData, { field1: '', fieldType: 'text' }]);
+  };
+
+  const handleInputChange = (index, fieldName, value) => {
+    const updatedFormData = [...formData];
+    updatedFormData[index][fieldName] = value;
+    setFormData(updatedFormData);
+  };
+  const handleFieldTypeChange = (index, value) => {
+    const updatedFormData = [...formData];
+    updatedFormData[index].fieldType = value;
+    setFormData(updatedFormData);
+  };
+  const handleDeleteFieldSet = (index) => {
+    const updatedFormData = [...formData];
+    updatedFormData.splice(index, 1);
+    setFormData(updatedFormData);
+  };
+  const handleSubmitt = () => {
+    console.log(formData)
+    // Send formData to the backend API using axios or fetch
+    // Example: axios.post('/api/your-endpoint', formData)
+  };
   return (
     <Box m="20px">
       <Header title="New Exam" subtitle="Create a New Exam" />
-
 
       <Box
         display="grid"
         gap="30px"
         gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+
 
       >
         <TextField
@@ -80,7 +108,7 @@ const NewExam = () => {
         <LocalizationProvider dateAdapter={AdapterDayjs} >
           <DemoContainer components={['DatePicker']} sx={{ gridColumn: "span 2" }}>
             <DatePicker label="Select Date" name="exam_date" sx={{ width: "100%" }}
-              onChange={e => setValues({ ...values, startdate: e.format() })}/>
+              onChange={e => setValues({ ...values, startdate: e.format() })} />
           </DemoContainer>
         </LocalizationProvider>
 
@@ -148,20 +176,63 @@ const NewExam = () => {
             <FormControlLabel value={false} control={<Radio />} label="No" name="no" />
           </RadioGroup>
         </FormControl>
-
-
-
-
       </Box>
-      <Box display="flex" justifyContent="end" mt="20px" sx={{pl:"6px",pr:"6px",pt:"2px",pb:"2px"}}>
-        <Button type="submit" color="secondary" variant="contained" onClick={handleSubmit} sx={{pl:"16px",pr:"16px",pt:"10px",pb:"10px"}}>
+      <Divider sx={{ my: 2 }} />
+      <Header title="Student Details" subtitle="Enter the details you want from student" />
+      {formData.map((fieldSet, index) => (
+        <Paper key={index} elevation={3} style={{ padding: '16px', marginBottom: '16px' }}>
+          <Grid container spacing={2} style={{ justifyContent: "space-evenly" }}>
+            <Grid item xs={6}>
+              <TextField
+                label={`Requirement`}
+                fullWidth
+                value={fieldSet.field1}
+                onChange={(e) => handleInputChange(index, 'field1', e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={5}>
+              <TextField
+                label="Format"
+                select
+                fullWidth
+                value={fieldSet.fieldType}
+                onChange={(e) => handleFieldTypeChange(index, e.target.value)}
+              >
+                <MenuItem value="date">Date</MenuItem>
+                <MenuItem value="number">Number</MenuItem>
+                <MenuItem value="text">Text</MenuItem>
+                <MenuItem value="email">Email</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={0} style={{ display: 'flex', }}>
+              <IconButton
+                onClick={() => handleDeleteFieldSet(index)}
+                size="small"
+                style={{ marginLeft: 'auto', color: 'red' }}>
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Grid>
+          </Grid>
+        </Paper>
+      ))}
+      <Box display="flex" justifyContent="end" mt="20px" sx={{ pl: "6px", pr: "6px", pt: "2px", pb: "2px" }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleAddFieldSet}
+        >
+          <AddIcon />
+        </Button>
+      </Box>
+      <Divider sx={{ my: 2 }} />
+      <Box display="flex" justifyContent="center" mt="20px" >
+        <Button type="submit" color="secondary" variant="contained" onClick={handleSubmit} sx={{ pl: "16px", pr: "16px", pt: "10px", pb: "10px", width: "15rem" }}>
           Create Exam
         </Button>
       </Box>
-      {examcode?<Typography component="h1" variant="h3" color="secondary" align="center">
+      {examcode ? <Typography component="h1" variant="h3" color="secondary" align="center">
         Exam Code : {examcode}
-      </Typography>:""}
-
+      </Typography> : ""}
 
     </Box>
   );

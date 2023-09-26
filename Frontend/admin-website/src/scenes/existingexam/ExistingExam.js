@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography,Divider } from "@mui/material";
 import Header from "../../components/Header";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -108,11 +108,12 @@ const ExistingExam = () => {
           ))}
         </datalist>
       </Box>
-      <Box display="flex" justifyContent="center" alignItems="center" mt="50px">
-        {/* <Typography component="h1" variant="h3">
+      {/* <Box display="flex" justifyContent="center" alignItems="center" mt="50px">
+        <Typography component="h1" variant="h3">
           Exam Code: {optionchange}
-        </Typography> */}
-      </Box>
+        </Typography>
+      </Box> */}
+      <Divider sx={{ my: 2 }} />
       <Box
         display="flex"
         justifyContent="center"
@@ -156,13 +157,14 @@ const ExistingExam = () => {
           </DemoContainer>
         </LocalizationProvider>
       </Box>
+      <Divider sx={{ my: 2 }} />
       <Box display="flex" justifyContent="center" mt="50px">
         <Button
           type="submit"
           color="secondary"
           variant="contained"
           onClick={handleSubmit}
-          sx={{ pl: "16px", pr: "16px", pt: "10px", pb: "10px" }}
+          sx={{ pl: "16px", pr: "16px", pt: "10px", pb: "10px",width:"15rem" }}
         >
           Create Exam
         </Button>
