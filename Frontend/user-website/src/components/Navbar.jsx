@@ -7,15 +7,15 @@ const Navbar = () => {
   const regex = /^\/dashboard\/exam\/\d+$/;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    let token = localStorage.getItem("token");
-    if (!token) {
-      setLogin(false);
-      navigate("/");
-    } else {
-      setLogin(true);
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   let token = localStorage.getItem("token");
+  //   if (!token) {
+  //     setLogin(false);
+  //     navigate("/");
+  //   } else {
+  //     setLogin(true);
+  //   }
+  // }, [navigate]);
 
   const logoutHandler = () => {
     localStorage.removeItem("token");
