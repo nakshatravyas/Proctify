@@ -441,6 +441,12 @@ const getRegisteredStudents = async(req,res)=>{
   res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
 }
 
+const getQuestion = async(req,res)=>{
+  const {questionid} = req.params
+  const response = await pool.query(`select * from questions where questionid = ${questionid};`)
+  res.status(StatusCodes.OK).json({res:"Success",data:response.rows[0]})
+}
+
 module.exports = {
   forgotPasswordAdmin,
   loginAdmin,
@@ -466,5 +472,6 @@ module.exports = {
   getPastExamsByAdmin,
   deleteExam,
   updateExam,
-  getRegisteredStudents
+  getRegisteredStudents,
+  getQuestion
 }

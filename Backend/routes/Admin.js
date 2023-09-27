@@ -26,7 +26,8 @@ const {
   getNewExamsByAdmin,
   deleteExam,
   updateExam,
-  getRegisteredStudents
+  getRegisteredStudents,
+  getQuestion
 } = require("../controllers/Admin");
 
 const adminMiddleware = require("../middleware/authentication_admin");
@@ -93,6 +94,9 @@ router.route("/updateexam/:examcode").post(adminMiddleware,updateExam)
 
 //get all the registered students
 router.route("/getregisteredstudent/:examcode").get(adminMiddleware,getRegisteredStudents)
+
+//get individual question based on question id
+router.route("/getquestion/:questionid").get(adminMiddleware,getQuestion)
 
 
 module.exports = router;
