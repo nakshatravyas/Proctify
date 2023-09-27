@@ -3,21 +3,23 @@ import toast from "react-hot-toast";
 import Sidebar from "../../components/Sidebar";
 import axios from "axios";
 const Report = () => {
-  const [data, setData] = useState('');
+  const [data, setData] = useState("");
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!data) {
       toast.dismiss();
       toast.error("Enter All Fields");
       return;
     }
-    const token = localStorage.getItem('token');
-     try {
+    const token = localStorage.getItem("token");
+    try {
       // console.log('examcode:',examcode);
       console.log(data);
       const response = await axios.post(
-        `http://127.0.0.1:3002/api/v1/student/reportproblem`, {description:data},{
+        `http://127.0.0.1:3002/api/v1/student/reportproblem`,
+        { description: data },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -29,11 +31,7 @@ const Report = () => {
       console.log(err.response.data.msg);
       toast.error(err.response.data.msg);
     }
-    setData('');
-  };
-
-  const setValueHandler = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
+    setData("");
   };
 
   return (
@@ -44,7 +42,6 @@ const Report = () => {
           <p className="text-2xl font-semibold my-3">Report A Problem</p>
           <div className="w-full">
             <form className=" px-8 pt-6 mb-4">
-              
               <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-semibold mb-2"

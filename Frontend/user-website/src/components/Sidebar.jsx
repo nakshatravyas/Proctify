@@ -10,26 +10,31 @@ const Sidebar = () => {
   let menuList = [
     {
       id: 1,
-      title: "Give Exams",
+      title: "All Exams",
       route: "/dashboard",
     },
     {
       id: 2,
+      title: "Give Exams",
+      route: "/dashboard/registered-exams",
+    },
+    {
+      id: 3,
       title: "Results",
       route: "/dashboard/results",
     },
     {
-      id: 3,
+      id: 4,
       title: "Report problem",
       route: "/dashboard/report-problem",
     },
     {
-      id: 4,
+      id: 5,
       title: "Profile",
       route: "/dashboard/profile",
     },
     {
-      id: 5,
+      id: 6,
       title: "Password Reset",
       route: "/dashboard/reset-password",
     },

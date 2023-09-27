@@ -1,22 +1,23 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import { Pencil, X } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 const Profile = () => {
   const [editMode, setEditMode] = useState(false);
-  const [name,setName] = useState('');
-  const [email,setEmail] = useState('');
-  const [phoneno,setPhoneno] = useState('');
-  useEffect(()=>{
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneno, setPhoneno] = useState("");
+  useEffect(() => {
     profileDeatils();
-  },[]);
-  const saveChanges = async() => {
- const token = localStorage.getItem("token");
+  }, []);
+  const saveChanges = async () => {
+    const token = localStorage.getItem("token");
     // console.log(token);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:3002/api/v1/student/updatedetails",{email,phoneno,name},
+        "http://127.0.0.1:3002/api/v1/student/updatedetails",
+        { email, phoneno, name },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -31,9 +32,9 @@ const Profile = () => {
       // });
     } catch (error) {
       console.error("error:", error.response.data.msg);
-      toast.error(error.response.data.msg)
+      toast.error(error.response.data.msg);
     }
-  }
+  };
   const profileDeatils = async () => {
     const token = localStorage.getItem("token");
     // console.log(token);
@@ -56,7 +57,7 @@ const Profile = () => {
       // });
     } catch (error) {
       console.error("error:", error.response.data.msg);
-      toast.error(error.response.data.msg)
+      toast.error(error.response.data.msg);
     }
   };
   return (
@@ -86,7 +87,7 @@ const Profile = () => {
                 type="text"
                 name="name"
                 required
-                value={name!=''?name:''}
+                value={name !== "" ? name : ""}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Name"
               />
@@ -104,7 +105,7 @@ const Profile = () => {
                 type="email"
                 name="email"
                 required
-                value={email!=''?email:''}
+                value={email !== "" ? email : ""}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
               />
@@ -122,12 +123,15 @@ const Profile = () => {
                 type="number"
                 name="phoneno"
                 required
-                value={phoneno!=''?phoneno:''}
+                value={phoneno !== "" ? phoneno : ""}
                 onChange={(e) => setPhoneno(e.target.value)}
                 placeholder="Phone No."
               />
             </div>
-            <button onClick={saveChanges} className="mt-4 px-4 rounded-md py-[6px] bg-blue-500 text-blue-100 hover:text-white hover:bg-blue-600 transition-all hover:transition-all duration-150 hover:duration-150 ease-out hover:ease-in">
+            <button
+              onClick={saveChanges}
+              className="mt-4 px-4 rounded-md py-[6px] bg-blue-500 text-blue-100 hover:text-white hover:bg-blue-600 transition-all hover:transition-all duration-150 hover:duration-150 ease-out hover:ease-in"
+            >
               Save Changes
             </button>
           </form>

@@ -7,7 +7,7 @@ import Profile from "../screens/Dashboard/Profile";
 import ForgetPassword from "../screens/Authentication/ForgetPassword";
 import { Toaster } from "react-hot-toast";
 import GiveExam from "../screens/Dashboard/GiveExam";
-import Exam from "../screens/Dashboard/Exam";
+import RegisteredExam from "../screens/Dashboard/RegisteredExam";
 import Result from "../screens/Dashboard/Results";
 import Report from "../screens/Dashboard/Report";
 import ResetPassword from "../screens/Dashboard/ResetPassword";
@@ -18,6 +18,8 @@ import RegisterProfile from "../screens/Authentication/RegisterProfile";
 import VerifyOtp from "../screens/Authentication/VerifyOtp";
 import ChangePassword from "../screens/Authentication/ChangePassword";
 import FinishExam from "../screens/Dashboard/FinishExam";
+import RegisterExam from "../screens/Dashboard/RegisterExam";
+import AllExams from "../screens/Dashboard/AllExams";
 const App = () => {
   return (
     <BrowserRouter>
@@ -30,7 +32,11 @@ const App = () => {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/dashboard/profile" element={<Profile />} />
-        <Route path="/dashboard" element={<Exam />} />
+        <Route path="/dashboard" element={<AllExams />} />
+        <Route
+          path="/dashboard/registered-exams"
+          element={<RegisteredExam />}
+        />
         <Route path="/dashboard/exam/:id" element={<GiveExam />} />
         <Route path="/dashboard/results/" element={<Result />} />
         <Route path="/dashboard/report-problem" element={<Report />} />
@@ -39,6 +45,7 @@ const App = () => {
         <Route path="/dashboard/checking" element={<PermissionCheck />} />
         <Route path="/dashboard/verify" element={<VerifyPhoto />} />
         <Route path="/dashboard/exam/completed" element={<FinishExam />} />
+        <Route path="/dashboard/registerexam/:id" element={<RegisterExam />} />
       </Routes>
       <Toaster position="bottom-center" />
     </BrowserRouter>

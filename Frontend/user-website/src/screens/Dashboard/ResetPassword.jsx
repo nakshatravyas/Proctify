@@ -10,32 +10,33 @@ const ResetPassword = () => {
     confirmpassword: "",
   });
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!data.currentpassword || !data.password || !data.confirmpassword) {
       toast.error("Enter all Fields!");
       return;
-    }
-    else if(data.password!=data.confirmpassword){
+    } else if (data.password !== data.confirmpassword) {
       toast.error("Enter same password in password and confirm password");
-    }
-    else{
-      const token = localStorage.getItem('token')
-      try{
-        const response = await axios.post("http://127.0.0.1:3002/api/v1/student/resetpassword",{
-        password:data.currentpassword,
-        newpassword:data.password
-      },{
-        headers:{
-          'Authorization':`Bearer ${token}`
-        }
-      })
-      console.log(response.data)
-      toast.success("Reset successful!");
-      }
-      catch(err){
-        console.log(err.response.data.msg)
-        toast.error(err.response.data.msg)
+    } else {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:3002/api/v1/student/resetpassword",
+          {
+            password: data.currentpassword,
+            newpassword: data.password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response.data);
+        toast.success("Reset successful!");
+      } catch (err) {
+        console.log(err.response.data.msg);
+        toast.error(err.response.data.msg);
       }
     }
     setData({
