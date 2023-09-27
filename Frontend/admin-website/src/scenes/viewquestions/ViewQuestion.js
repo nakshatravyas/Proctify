@@ -325,9 +325,11 @@ const ViewQuestion = () => {
   return (
     <Box m="20px">
       {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+      {/* <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="View Questions" subtitle="Update or Delete questions" />
-      </Box>
+      </Box> */}
+      <h1 style={{ marginBottom: -10 }}>View Questions</h1>
+      <h2 style={{ color: "#1774D4" }}>Update or Delete questions</h2>
       <Box
         display="flex"
         justifyContent="center"

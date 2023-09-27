@@ -15,9 +15,12 @@ const Dashboard = () => {
   return (
     <Box m="20px">
       {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Ongoing Exams" subtitle="Search for a particular exam" />
-      </Box>
+      {/* <Box display="flex" justifyContent="space-between" alignItems="center"> */}
+        {/* <Header title="Ongoing Exams" subtitle="Search for a particular exam" />
+         */}
+      <h1 style={{ marginBottom: -10 }}>Ongoing Exams</h1>
+      <h3 style={{ color: "#1774D4",fontWeight:'medium',fontSize:19 }}>Search for a particular exam</h3>
+      {/* </Box> */}
 
       {/* GRID & CHARTS */}
       <Box
@@ -27,17 +30,18 @@ const Dashboard = () => {
         gap="10px"
         pt="50px"
       >
-        <Typography component="h1" variant="h3">
+        {/* <Typography component="h1" variant="h3">
           Exam Code :
-        </Typography>
+        </Typography> */}
+        <h3 style={{ color: "#000000",fontSize:19,fontWeight:'lighter' }}>Exam Code :</h3>
+        
         <Box
         display="flex"
         backgroundColor={colors.primary[400]}
-        borderRadius="3px"
         width="20rem"
         >
-        <InputBase sx={{ flex: 1,p:"10px" }} onChange={e => setexamCode( e.target.value)} placeholder="Exam Code"/>
-        <IconButton type="button" sx={{ p: "15px",backgroundColor:"#0159ED",borderRadius:"0",color:"white",'&:hover':{backgroundColor:"#1976d2"} }} onClick={e => navigate("exam")}>
+        <InputBase style={{backgroundColor:'#f2f2f2',borderRadius:20}} sx={{ flex: 1,p:"10px" }} onChange={e => setexamCode( e.target.value)} placeholder="Exam Code"/>
+        <IconButton type="button" sx={{ p: "15px",backgroundColor:"#0159ED",color:"white"}} onClick={e => navigate("exam")}>
           <SearchIcon />
         </IconButton>
         </Box>

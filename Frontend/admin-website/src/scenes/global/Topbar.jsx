@@ -8,6 +8,7 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import { useNavigate } from 'react-router-dom'
 import toast from "react-hot-toast";
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Topbar = () => {
   const theme = useTheme();
@@ -36,7 +37,7 @@ const Topbar = () => {
           <SettingsOutlinedIcon />
         </IconButton> */}
         <IconButton onClick={logout}>
-          <PersonOutlinedIcon />
+          <LogoutIcon />
         </IconButton>
       </Box>
     </Box>
