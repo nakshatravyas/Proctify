@@ -117,7 +117,7 @@ const Sidebar = ({ isSticky }) => {
             </SubMenu>
             <Item
               title="Generate Question"
-              to=""
+              to="generate_question"
               icon={<PostAddOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
