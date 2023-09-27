@@ -458,6 +458,13 @@ const getRegisteredStudents = async (req, res) => {
     throw new BadRequestError("Please provide valid examcode");
   }
   const response = await pool.query(`select s.name,s.email,s.phoneno,r.student_details from registered_exams as r inner join student as s on r.sid = s.sid where r.examcode = '${examcode}';`)
+  for(let i=0;i<response.rowCount;++i){
+    response.rows[i].student_details = JSON.parse(response.rows[i].student_details)
+    for(let key in response.rows[i].student_details){
+      response.rows[i][key] = response.rows[i].student_details[key]
+    }
+    delete response.rows[i]['student_details']
+  }
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
