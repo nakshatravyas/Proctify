@@ -293,24 +293,27 @@ const canGiveExam = async (req, res) => {
   if (checkexamcode.rowCount == 0) {
     throw new BadRequestError("Please provide valid examcode");
   }
-  let yourDate = new Date();
-  const check = yourDate
-    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
-    .split(",")[0];
+  // let yourDate = new Date();
+  // const check = yourDate
+  //   .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+  //   .split(",")[0];
 
-  // Input date in 'dd/mm/yyyy' format
-  const inputDateStr = `'${check}'`;
+  // // Input date in 'dd/mm/yyyy' format
+  // const inputDateStr = `'${check}'`;
 
-  // Parse the input date and format it as 'yyyy-mm-dd'
-  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  // // Parse the input date and format it as 'yyyy-mm-dd'
+  // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  const date = new Date()
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
 
   // Get the current hour, minute, and second
-  const hours = yourDate.getHours().toString().padStart(2, "0");
-  const minutes = yourDate.getMinutes().toString().padStart(2, "0");
-  const seconds = yourDate.getSeconds().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
+  console.log(`select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`)
   const response = await pool.query(
     `select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
@@ -486,16 +489,18 @@ const registerExam = async (req, res) => {
 
 const getRegisteredExam = async (req, res) => {
   const { studentId } = req.user;
-  let yourDate = new Date();
-  const check = yourDate
-    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
-    .split(",")[0];
+  // let yourDate = new Date();
+  // const check = yourDate
+  //   .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+  //   .split(",")[0];
 
-  // Input date in 'dd/mm/yyyy' format
-  const inputDateStr = `'${check}'`;
+  // // Input date in 'dd/mm/yyyy' format
+  // const inputDateStr = `'${check}'`;
 
-  // Parse the input date and format it as 'yyyy-mm-dd'
-  const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
+  // // Parse the input date and format it as 'yyyy-mm-dd'
+  // const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
+  const date = new Date()
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
   const response = await pool.query(
     `select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${outputDateStr}';`
   );
@@ -504,15 +509,17 @@ const getRegisteredExam = async (req, res) => {
 
 const getAllExams = async (req, res) => {
   const { studentId } = req.user;
-  let yourDate = new Date();
-  const check = yourDate
-    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
-    .split(",")[0];
+  // let yourDate = new Date();
+  // const check = yourDate
+  //   .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+  //   .split(",")[0];
 
-  // Input date in 'mm/dd/yyyy' format
-  const inputDateStr = `'${check}'`;
-  // Parse the input date and format it as 'yyyy-mm-dd'
-  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  // // Input date in 'mm/dd/yyyy' format
+  // const inputDateStr = `'${check}'`;
+  // // Parse the input date and format it as 'yyyy-mm-dd'
+  // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  const date = new Date()
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
   const response = await pool.query(
     `SELECT e.examcode, e.startdate, e.starttime, e.endtime
 FROM exam e

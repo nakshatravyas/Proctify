@@ -231,16 +231,19 @@ const createFromExistingExam = async (req, res) => {
     throw new BadRequestError("Please provide valid examcode");
   }
   const newexamcode = Math.random().toString(36).substr(9, 32)
-  let yourDate = new Date(response.rows[0].last_registeration_date);
-  const check = yourDate
-    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
-    .split(",")[0];
+  // let yourDate = new Date(response.rows[0].last_registeration_date);
+  // const check = yourDate
+  //   .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+  //   .split(",")[0];
 
-  // Input date in 'dd/mm/yyyy' format
-  const inputDateStr = `'${check}'`;
+  // // Input date in 'dd/mm/yyyy' format
+  // const inputDateStr = `'${check}'`;
 
-  // Parse the input date and format it as 'yyyy-mm-dd'
-  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  // // Parse the input date and format it as 'yyyy-mm-dd'
+  // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  const date = new Date(response.rows[0].last_registeration_date)
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+  
 
   const inserted_response = await pool.query(`insert into exam values(${adminId},'${newexamcode}','${startdate}','${starttime}','${endtime}',${response.rows[0].duration},'${response.rows[0].exam_name}','${response.rows[0].mode}',${response.rows[0].negative_marks},${response.rows[0].question_weightage},${response.rows[0].publish_result},${response.rows[0].israndom},'${response.rows[0].details}','${outputDateStr}');`)
   //copying questions of the refernce exam into new exam
@@ -357,21 +360,23 @@ const publishResult = async (req, res) => {
 
 const getPastExamsByAdmin = async (req, res) => {
   const { adminId } = req.user
-  let yourDate = new Date();
-  const check = yourDate
-    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
-    .split(",")[0];
+  // let yourDate = new Date();
+  // const check = yourDate
+  //   .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+  //   .split(",")[0];
 
-  // Input date in 'dd/mm/yyyy' format
-  const inputDateStr = `'${check}'`;
+  // // Input date in 'dd/mm/yyyy' format
+  // const inputDateStr = `'${check}'`;
 
-  // Parse the input date and format it as 'yyyy-mm-dd'
-  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  // // Parse the input date and format it as 'yyyy-mm-dd'
+  // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  const date = new Date()
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
 
   // Get the current hour, minute, and second
-  const hours = yourDate.getHours().toString().padStart(2, "0");
-  const minutes = yourDate.getMinutes().toString().padStart(2, "0");
-  const seconds = yourDate.getSeconds().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
@@ -381,21 +386,23 @@ const getPastExamsByAdmin = async (req, res) => {
 
 const getNewExamsByAdmin = async (req, res) => {
   const { adminId } = req.user
-  let yourDate = new Date();
-  const check = yourDate
-    .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
-    .split(",")[0];
+  // let yourDate = new Date();
+  // const check = yourDate
+  //   .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
+  //   .split(",")[0];
 
-  // Input date in 'dd/mm/yyyy' format
-  const inputDateStr = `'${check}'`;
+  // // Input date in 'dd/mm/yyyy' format
+  // const inputDateStr = `'${check}'`;
 
-  // Parse the input date and format it as 'yyyy-mm-dd'
-  const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  // // Parse the input date and format it as 'yyyy-mm-dd'
+  // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
+  const date = new Date()
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
 
   // Get the current hour, minute, and second
-  const hours = yourDate.getHours().toString().padStart(2, "0");
-  const minutes = yourDate.getMinutes().toString().padStart(2, "0");
-  const seconds = yourDate.getSeconds().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
