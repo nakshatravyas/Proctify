@@ -3,7 +3,6 @@ import {
   ProSidebar,
   Menu,
   MenuItem,
-  // Item,
   SubMenu,
 } from "react-pro-sidebar";
 import { Box, Typography, useTheme } from "@mui/material";
@@ -26,13 +25,11 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       active={selected === title}
       style={{
         color: "white",
-        fontSize:30
       }}
       onClick={() => setSelected(title)}
       icon={icon}
-      
     >
-      <h2 style={{fontSize:17,fontWeight:'bold'}}>{title}</h2>
+      <Typography>{title}</Typography>
       <Link to={to} />
     </MenuItem>
   );
@@ -75,50 +72,44 @@ const Sidebar = ({ isSticky }) => {
       <ProSidebar collapsed={false}>
         <Menu iconShape="square">
           {/* LOGO AND MENU ICON */}
-          {/* <Box mb="25px" mt="50px"> */}
-            {/* <Box textAlign="center"> */}
-              {/* <Typography
+          <Box mb="25px" mt="50px">
+            <Box textAlign="center">
+              <Typography
                 variant="h2"
                 color="white"
                 fontWeight="bold"
                 sx={{ m: "10px 0 0 0" }}
               >
                 Admin
-              </Typography> */}
-              <div style={{display:'flex',justifyContent:'center'}}>
+              </Typography>
 
-              <h1 style={{color:'white',fontSize:30,fontFamily:'monospace'}}>
-                Admin
-              </h1>
-              </div>
-
-            {/* </Box> */}
-          {/* </Box> */}
+            </Box>
+          </Box>
 
 
           <Box paddingLeft="10%">
             <Item
               title="Ongoing Exams"
               to=""
-              icon={<HomeOutlinedIcon style={{fontSize:25}}/>}
+              icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
 
-            <SubMenu title="Create Exam" icon={<AppRegistrationIcon style={{fontSize:25}}/>} style={{
-              color: "white",fontSize:17,fontWeight:'bold'
+            <SubMenu title="Create Exam" icon={<AppRegistrationIcon />} style={{
+              color: "white",
             }}>
               <Item
                 title="Create New Exam"
                 to="new_exam"
-                icon={<CreateIcon style={{fontSize:25}}/>}
+                icon={<CreateIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
                 title="Existing Exam"
                 to="existing_exam"
-                icon={<EventRepeatOutlinedIcon style={{fontSize:25}}/>}
+                icon={<EventRepeatOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
@@ -127,35 +118,35 @@ const Sidebar = ({ isSticky }) => {
             <Item
               title="Generate Question"
               to="generate_question"
-              icon={<PostAddOutlinedIcon style={{fontSize:25}}/>}
+              icon={<PostAddOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Past Exams"
               to="past_exams"
-              icon={<HistoryOutlinedIcon style={{fontSize:25}}/>}
+              icon={<HistoryOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="View Questions"
               to="view_questions"
-              icon={<NoteAltOutlinedIcon style={{fontSize:25}}/>}
+              icon={<NoteAltOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Publish Result"
               to="publish_results"
-              icon={<UploadFileOutlinedIcon style={{fontSize:25}}/>}
+              icon={<UploadFileOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Edit Profile"
               to="edit_profile"
-              icon={<AccountCircleOutlinedIcon style={{fontSize:25}}/>}
+              icon={<AccountCircleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
