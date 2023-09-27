@@ -298,7 +298,15 @@ const updateQuestion = async (req, res) => {
   if (checkquestionid.rowCount == 0) {
     throw new BadRequestError("Please provide valid Question ID");
   }
-  const response = await pool.query(`update questions set description = '${description}',number_of_options=${number_of_options},options=array[${[...options]}],answer=${answer},image='${image ? image : NULL}' where questionid = ${questionid};`)
+  let options_str = "array[";
+      for (let i = 0; i < number_of_options; ++i) {
+        options_str += `'${options[i]}'`;
+        if (i != number_of_options - 1) {
+          options_str += ",";
+        }
+      }
+  options_str += "]";
+  const response = await pool.query(`update questions set description = '${description}',number_of_options=${number_of_options},options=${options_str},answer=${answer},image='${image ? image : NULL}' where questionid = ${questionid};`)
   res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
@@ -416,8 +424,6 @@ const deleteExam = async (req, res) => {
   if (checkexamcode.rowCount == 0) {
     throw new BadRequestError("Please provide valid examcode");
   }
-  //delete exam from exam table
-  const deleteexam = await pool.query(`delete from exam where examcode = '${examcode}';`)
   //delete questions
   const deletequestions = await pool.query(`delete from questions where examcode = '${examcode}';`)
   //delete threshold
@@ -428,6 +434,8 @@ const deleteExam = async (req, res) => {
   const deleteregisteredstudents = await pool.query(`delete from registered_exams where examcode = '${examcode}';`)
   //delete result
   const deleteresult = await pool.query(`delete from result where examcode = '${examcode}';`)
+  //delete exam from exam table
+  const deleteexam = await pool.query(`delete from exam where examcode = '${examcode}';`)
   res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
