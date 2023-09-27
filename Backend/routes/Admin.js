@@ -27,7 +27,9 @@ const {
   deleteExam,
   updateExam,
   getRegisteredStudents,
-  getQuestion
+  getQuestion,
+  getAttemptedAndNotAttemptedQuestionWiseBar,
+  getStudentCountInPercentageRangeLine
 } = require("../controllers/Admin");
 
 const adminMiddleware = require("../middleware/authentication_admin");
@@ -78,7 +80,7 @@ router
   .get(adminMiddleware, getThresholdValueOfAllStudentsExamWise);
 
 //publish result
-router.route("/publishresult/:examcode").get(adminMiddleware, publishResult);
+router.route("/publishresult/:examcode").post(adminMiddleware, publishResult);
 
 //get all the past exam created by particular admin - it will return array of object
 router.route("/getallpastexams").get(adminMiddleware,getPastExamsByAdmin)
@@ -97,6 +99,12 @@ router.route("/getregisteredstudent/:examcode").get(adminMiddleware,getRegistere
 
 //get individual question based on question id
 router.route("/getquestion/:questionid").get(adminMiddleware,getQuestion)
+
+//get the data which states how many times a particular question is attempted an not attempted - this data will be fed in bar graph
+router.route("/getattemptedandnotattemptedquestionwisebar/:examcode").get(adminMiddleware,getAttemptedAndNotAttemptedQuestionWiseBar)
+
+//get the data that how many students are their in particular range of percentage - this data will be fed in bar graph
+router.route("/getstudentcountinpercentagerangeline/:examcode") .get(adminMiddleware,getStudentCountInPercentageRangeLine)
 
 
 module.exports = router;

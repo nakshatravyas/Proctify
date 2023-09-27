@@ -342,11 +342,15 @@ const getThresholdValueOfAllStudentsExamWise = async(req,res)=>{
 
 const publishResult = async(req,res)=>{
   const {examcode} = req.params
+  const {cutoff} = req.body
+  if(!cutoff){
+    throw new BadRequestError("Please provide required credentials")
+  }
   const checkexamcode = await pool.query(`select * from exam where examcode = '${examcode}';`)
   if(checkexamcode.rowCount == 0){
     throw new BadRequestError("Please provide valid examcode");
   }
-  const response = await pool.query(`update exam set publish_result = true where examcode = '${examcode}';`)
+  const response = await pool.query(`update exam set publish_result = true,cutoff=${cutoff} where examcode = '${examcode}';`)
   res.status(StatusCodes.OK).json({res:"Success"})
 }
 
@@ -447,6 +451,48 @@ const getQuestion = async(req,res)=>{
   res.status(StatusCodes.OK).json({res:"Success",data:response.rows[0]})
 }
 
+const getStudentCountInPercentageRangeLine = async(req,res)=>{
+  const {examcode} = req.params
+  const response = await pool.query(`SELECT
+  CONCAT(FLOOR(percentage / 10) * 10, '-', FLOOR(percentage / 10) * 10 + 10, '%') AS percentage_range,
+  COUNT(*) AS student_count
+FROM
+  result
+  where examcode = '${examcode}'
+GROUP BY
+  FLOOR(percentage / 10)
+ORDER BY
+  FLOOR(percentage / 10);
+`)
+const obj = {}
+  obj['id'] = 'Number of Students'
+  obj['color'] = 'green'
+  let arr=[]
+  for(let i=0;i<response.rows.length;++i){
+    let individualobj = {}
+    individualobj['x'] = response.rows[i].percentage_range,
+    individualobj['y'] = response.rows[i].student_count
+    arr.push(individualobj)
+  }
+  obj['data'] = arr
+  let finalarr = []
+  finalarr.push(obj)
+res.status(StatusCodes.OK).json({res:"Success",data:finalarr})
+}
+
+const getAttemptedAndNotAttemptedQuestionWiseBar = async(req,res)=>{
+  const {examcode} = req.params
+  const response = await pool.query(`select questionid,attempted,not_attempted from questions where examcode='${examcode}';`)
+  let start = 1;
+  for(let i=0;i<response.rows.length;++i){
+    response.rows[i]['questionid'] = start
+    start=start+1
+  }
+  res.status(StatusCodes.OK).json({res:"Success",data:response.rows})
+}
+
+
+
 module.exports = {
   forgotPasswordAdmin,
   loginAdmin,
@@ -473,5 +519,7 @@ module.exports = {
   deleteExam,
   updateExam,
   getRegisteredStudents,
-  getQuestion
+  getQuestion,
+  getStudentCountInPercentageRangeLine,
+  getAttemptedAndNotAttemptedQuestionWiseBar
 }
