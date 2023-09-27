@@ -509,7 +509,7 @@ const getAllExams = async (req, res) => {
     .toLocaleString(undefined, { timeZone: "Asia/Kolkata" })
     .split(",")[0];
 
-  // Input date in 'dd/mm/yyyy' format
+  // Input date in 'mm/dd/yyyy' format
   const inputDateStr = `'${check}'`;
 
   // Parse the input date and format it as 'yyyy-mm-dd'
