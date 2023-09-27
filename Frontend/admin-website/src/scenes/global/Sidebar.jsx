@@ -19,6 +19,8 @@ import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import PreviewOutlinedIcon from '@mui/icons-material/PreviewOutlined';
+import FolderSharedOutlinedIcon from '@mui/icons-material/FolderSharedOutlined';
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   return (
@@ -61,26 +63,26 @@ const Sidebar = ({ isSticky }) => {
         },
         "& .pro-inner-item": {
           padding: "5px 35px 5px 20px !important",
-          borderRadius:"15px"
+          borderRadius: "15px"
         },
-        "& .pro-item-content":{
-          fontSize:"18px"
+        "& .pro-item-content": {
+          fontSize: "18px"
         },
-        "& .pro-inner-item p":{
-          fontSize:"16px"
+        "& .pro-inner-item p": {
+          fontSize: "16px"
         },
         "& .pro-inner-item:hover": {
           color: "#0159ED !important",
-          background:"#ffffff !important"
+          background: "#ffffff !important"
         },
-        "& .pro-menu-item":{
-          marginBottom:"10px",
-          borderRadius:"15px"
+        "& .pro-menu-item": {
+          marginBottom: "10px",
+          borderRadius: "15px"
         },
         "& .pro-menu-item.active": {
           color: "#0159ED !important",
-          background:"#ffffff !important",
-          
+          background: "#ffffff !important",
+
         },
       }}
     >
@@ -95,7 +97,7 @@ const Sidebar = ({ isSticky }) => {
                 fontWeight="bold"
                 sx={{ m: "10px 0 0 0" }}
               >
-                Admin
+                Proctor
               </Typography>
 
             </Box>
@@ -141,19 +143,19 @@ const Sidebar = ({ isSticky }) => {
               color: "white",
             }}>
 
-            <Item
-              title="Edit Exams"
-              to="edit_exams"
-              icon={<HistoryOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
+              <Item
+                title="Edit New Exam"
+                to="edit_exams"
+                icon={<BorderColorOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
               />
-            <Item
-              title="Past Exams"
-              to="past_exams"
-              icon={<HistoryOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
+              <Item
+                title="Past Exams"
+                to="past_exams"
+                icon={<HistoryOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
               />
             </SubMenu>
 
@@ -167,7 +169,7 @@ const Sidebar = ({ isSticky }) => {
             <Item
               title="Student Details"
               to="student_details"
-              icon={<NoteAltOutlinedIcon />}
+              icon={<FolderSharedOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />

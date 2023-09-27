@@ -6,6 +6,7 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 // import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 // import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom'
 import toast from "react-hot-toast";
 
@@ -19,7 +20,7 @@ const Topbar = () => {
     navigate('/');
   }
   return (
-    <Box display="flex" justifyContent="right" p={2}>
+    <Box display="flex" justifyContent="right" p={0}>
       {/* ICONS */}
       <Box display="flex">
         {/* <IconButton onClick={colorMode.toggleColorMode}>
@@ -36,7 +37,7 @@ const Topbar = () => {
           <SettingsOutlinedIcon />
         </IconButton> */}
         <IconButton onClick={logout}>
-          <PersonOutlinedIcon />
+          <LogoutIcon color="primary" />
         </IconButton>
       </Box>
     </Box>
