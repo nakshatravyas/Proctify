@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography,Divider } from "@mui/material";
+import { Box, Button, Typography, Divider } from "@mui/material";
 import Header from "../../components/Header";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -77,7 +77,8 @@ const ExistingExam = () => {
   };
   return (
     <Box m="20px">
-      <Header title="Existing Exam" subtitle="Create from Existing Exam" />
+      {/* <Header title="Existing Exam" subtitle="Create from Existing Exam" /> */}
+      <h1>Create from Existing Exam</h1>
       <Box
         display="flex"
         justifyContent="center"
@@ -164,7 +165,13 @@ const ExistingExam = () => {
           color="secondary"
           variant="contained"
           onClick={handleSubmit}
-          sx={{ pl: "16px", pr: "16px", pt: "10px", pb: "10px",width:"15rem" }}
+          sx={{
+            pl: "16px",
+            pr: "16px",
+            pt: "10px",
+            pb: "10px",
+            width: "15rem",
+          }}
         >
           Create Exam
         </Button>
