@@ -521,7 +521,7 @@ const getAllExams = async (req, res) => {
   const date = new Date()
   const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
   const response = await pool.query(
-    `SELECT e.examcode, e.startdate, e.starttime, e.endtime
+    `SELECT e.examcode, e.startdate, e.starttime, e.endtime,e.exam_name,e.negative_marks,e.question_weightage,e.duration,e.details
 FROM exam e
 LEFT JOIN registered_exams rs ON e.examcode = rs.examcode
 WHERE e.last_registeration_date >= '${outputDateStr}' AND (rs.sid IS NULL OR rs.sid != ${studentId});
