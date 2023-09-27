@@ -190,9 +190,9 @@ const GenerateQuestion = () => {
       description: question,
       number_of_options: numOptions,
       options,
-      answer: correctOption,
+      answer: correctOption - 1,
       //   includeImage,
-      questionImage: s3Link, // Include the S3 link in the form data
+      image: s3Link, // Include the S3 link in the form data
     };
     try {
       const response = await axios.post(
@@ -211,7 +211,7 @@ const GenerateQuestion = () => {
       toast.error(err.response.data.msg);
     }
 
-    console.log("Submitted Data:", formData);
+    // console.log("Submitted Data:", formData);
     setIsLoading(false);
   };
 
@@ -311,7 +311,7 @@ const GenerateQuestion = () => {
                       <img
                         src={URL.createObjectURL(questionImage)}
                         alt="Question"
-                        style={{ maxWidth: "200px", marginBottom: "8px" }}
+                        style={{ maxWidth: "330px", marginBottom: "20px" }}
                       />
                       <IconButton
                         color="secondary"
@@ -359,7 +359,7 @@ const GenerateQuestion = () => {
                 sx={{ marginBottom: 2 }}
               />
             ))}
-            <TextField
+            {/* <TextField
               fullWidth
               required
               label="Correct Option No."
@@ -368,8 +368,21 @@ const GenerateQuestion = () => {
               //   multiline
               rows={4}
               sx={{ marginBottom: 2 }}
-            />
-
+            /> */}
+            <TextField
+              fullWidth
+              select
+              label="Choose Correct Option"
+              value={correctOption}
+              onChange={(e) => setCorrectOption(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            >
+              {Array.from({ length: numOptions }, (_, i) => (
+                <MenuItem key={i} value={i + 2}>
+                  {i + 1}
+                </MenuItem>
+              ))}
+            </TextField>
             <Button type="submit" variant="contained" color="primary">
               {uploading
                 ? "Uploading..."
