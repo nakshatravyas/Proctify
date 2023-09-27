@@ -319,7 +319,7 @@ const canGiveExam = async (req, res) => {
   }
   //check whether student is registered or not
   const studentregistered = await pool.query(`select * from registered_exams where examcode='${examcode}' and sid = ${studentId};`)
-  if(studentregistered.rowCount == 0){
+  if (studentregistered.rowCount == 0) {
     throw new BadRequestError("You are not registered for this exam")
   }
   //check whether student has appeared or not
@@ -351,18 +351,18 @@ const calculateResult = async (req, res) => {
     } else {
       marks -= negativemarks;
     }
-    totalmarks+=questionweightage
-    let attempted = data[i].attempted==undefined?0:data[i].attempted;
-    let not_attempted = data[i].not_attempted==undefined?0:data[i].not_attempted;
-    if(data[i].selectedoption==-1){
+    totalmarks += questionweightage
+    let attempted = data[i].attempted == undefined ? 0 : data[i].attempted;
+    let not_attempted = data[i].not_attempted == undefined ? 0 : data[i].not_attempted;
+    if (data[i].selectedoption == -1) {
       not_attempted++;
     }
-    else{
+    else {
       attempted++;
     }
     const updatecount = await pool.query(`update questions set attempted=${attempted},not_attempted=${not_attempted} where questionid=${data[i].questionid}`)
   }
-  let percentage = (marks/totalmarks)*100
+  let percentage = (marks / totalmarks) * 100
   const resultupdate = await pool.query(
     `insert into result values('${examcode}',${studentId},${marks},${percentage});`
   );
@@ -408,11 +408,11 @@ const getSpecificExamResult = async (req, res) => {
   // console.log(percentile_calc.rows)
   // console.log(percentile)
   let status = ''
-  
-  if(checkexamcode.rows[0].cutoff <= user_marks){
+
+  if (checkexamcode.rows[0].cutoff <= user_marks) {
     status = 'PASS'
   }
-  else{
+  else {
     status = 'FAIL'
   }
 
@@ -424,8 +424,8 @@ const getSpecificExamResult = async (req, res) => {
       avg: response.rows[0].avg,
       count: response.rows[0].count,
       marks: user_marks,
-      cutoff:checkexamcode.rows[0].cutoff,
-      percentage:marks.rows[0].percentage,
+      cutoff: checkexamcode.rows[0].cutoff,
+      percentage: marks.rows[0].percentage,
       status
     },
   });
@@ -511,7 +511,6 @@ const getAllExams = async (req, res) => {
 
   // Input date in 'dd/mm/yyyy' format
   const inputDateStr = `'${check}'`;
-
   // Parse the input date and format it as 'yyyy-mm-dd'
   const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const response = await pool.query(

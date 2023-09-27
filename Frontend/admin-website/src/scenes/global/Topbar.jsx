@@ -9,7 +9,6 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom'
 import toast from "react-hot-toast";
-import LogoutIcon from '@mui/icons-material/Logout';
 
 const Topbar = () => {
   const theme = useTheme();

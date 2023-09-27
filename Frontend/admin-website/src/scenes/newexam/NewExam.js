@@ -28,17 +28,20 @@ const NewExam = () => {
     question_weightage: "",
     mode: "",
     isRandom: "",
+    last_registeration_date: "",
+    details: [{ name: '', type: '' }],
   })
-  const [formData, setFormData] = useState([{ field1: '', fieldType: 'text' },]);
   const [examcode, setExamCode] = useState('')
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log(values)
     const startdate = values.startdate.split("T")[0]
+    const last_registration_date = values.last_registeration_date.split("T")[0]
     const starttime = values.starttime.split("T")[1].split("+")[0]
     const endtime = values.endtime.split("T")[1].split("+")[0]
     const negative_marks = (Number(values.question_weightage) * Number(values.negative_marks)) / 100
     values['startdate'] = startdate
+    values['last_registeration_date'] = last_registration_date
     values['starttime'] = starttime
     values['endtime'] = endtime
     values['negative_marks'] = negative_marks
@@ -59,31 +62,31 @@ const NewExam = () => {
       toast.error(err.response.data.msg)
     }
   }
-
   const handleAddFieldSet = () => {
-    setFormData([...formData, { field1: '', fieldType: 'text' }]);
+    const updatedDetails = [...values.details, { name: '', type: 'text' }];
+    setValues({ ...values, details: updatedDetails });
   };
 
   const handleInputChange = (index, fieldName, value) => {
-    const updatedFormData = [...formData];
-    updatedFormData[index][fieldName] = value;
-    setFormData(updatedFormData);
+    const updatedDetails = [...values.details];
+    updatedDetails[index][fieldName] = value;
+    setValues({ ...values, details: updatedDetails });
   };
+
+
   const handleFieldTypeChange = (index, value) => {
-    const updatedFormData = [...formData];
-    updatedFormData[index].fieldType = value;
-    setFormData(updatedFormData);
+    const updatedDetails = [...values.details];
+    updatedDetails[index]['type'] = value;
+    setValues({ ...values, details: updatedDetails });
   };
+
   const handleDeleteFieldSet = (index) => {
-    const updatedFormData = [...formData];
-    updatedFormData.splice(index, 1);
-    setFormData(updatedFormData);
+    const updatedDetails = [...values.details];
+    updatedDetails.splice(index, 1);
+    setValues({ ...values, details: updatedDetails });
   };
-  const handleSubmitt = () => {
-    console.log(formData)
-    // Send formData to the backend API using axios or fetch
-    // Example: axios.post('/api/your-endpoint', formData)
-  };
+
+
   return (
     <Box m="20px">
       <Header title="New Exam" subtitle="Create a New Exam" />
@@ -176,24 +179,24 @@ const NewExam = () => {
             <FormControlLabel value={false} control={<Radio />} label="No" name="no" />
           </RadioGroup>
         </FormControl>
-        {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
+        <LocalizationProvider dateAdapter={AdapterDayjs} >
           <DemoContainer components={['DatePicker']} sx={{ gridColumn: "span 2" }}>
-            <DatePicker label="Last Date" name="latexam_date" sx={{ width: "100%" }}
-              onChange={e => setValues({ ...values, startdate: e.format() })} />
+            <DatePicker label="Last date for registration" name="latexam_date" sx={{ width: "100%" }}
+              onChange={e => setValues({ ...values, last_registeration_date: e.format() })} />
           </DemoContainer>
-        </LocalizationProvider> */}
+        </LocalizationProvider>
       </Box>
       <Divider sx={{ my: 2 }} />
-      <Header title="Student Details" subtitle="Enter the details you want from student"/>
-      {formData.map((fieldSet, index) => (
+      <Header title="Student Details" subtitle="Enter the details you want from student" />
+      {values.details.map((fieldSet, index) => (
         <Paper key={index} elevation={3} style={{ padding: '16px', marginBottom: '16px' }}>
           <Grid container spacing={2} style={{ justifyContent: "space-evenly" }}>
             <Grid item xs={6}>
               <TextField
                 label={`Requirement`}
                 fullWidth
-                value={fieldSet.field1}
-                onChange={(e) => handleInputChange(index, 'field1', e.target.value)}
+                value={fieldSet.name}
+                onChange={(e) => handleInputChange(index, 'name', e.target.value)}
               />
             </Grid>
             <Grid item xs={5}>
@@ -201,7 +204,7 @@ const NewExam = () => {
                 label="Format"
                 select
                 fullWidth
-                value={fieldSet.fieldType}
+                value={fieldSet.type}
                 onChange={(e) => handleFieldTypeChange(index, e.target.value)}
               >
                 <MenuItem value="date">Date</MenuItem>

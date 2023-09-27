@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Typography, useTheme } from "@mui/material";
+import { Box, Button, Typography, useTheme, TextField } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import axios from "axios";
@@ -13,10 +13,11 @@ const PublishResults = () => {
   const colors = tokens(theme.palette.mode);
   const [options, setOptions] = useState([]);
   const [optionchange, setOptionChange] = useState("");
-  const [data,setData] = useState(false)
-  const [showresult,setShowResult] = useState(true)
-  const [perecentageLine,setPercentageLine] = useState([])
-  const [attemptedBar,setAttemptedBar] = useState([])
+  const [data, setData] = useState(false)
+  const [showresult, setShowResult] = useState(true)
+  const [perecentageLine, setPercentageLine] = useState([])
+  const [attemptedBar, setAttemptedBar] = useState([])
+  const [values, setValues] = useState('')
 
   useEffect(() => {
     fetchdata();
@@ -24,8 +25,8 @@ const PublishResults = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:3002/api/v1/admin/publishresult/${optionchange}`,
+      const response = await axios.post(
+        `http://127.0.0.1:3002/api/v1/admin/publishresult/${optionchange}`, { cutoff: values },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,46 +58,46 @@ const PublishResults = () => {
       toast.error(err.response.data.msg);
     }
   };
-  const handleShow = async ()=>{
-    try{
+  const handleShow = async () => {
+    try {
       const response = await axios.get(`http://127.0.0.1:3002/api/v1/admin/getexam/${optionchange}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
       console.log(response.data.data.publish_result)
       setShowResult(response.data.data.publish_result)
       setData(true)
-    }catch(err){
+    } catch (err) {
       toast.error(err.response.data.msg)
     }
-    try{
+    try {
       const response = await axios.get(`http://127.0.0.1:3002/api/v1/admin/getstudentcountinpercentagerangeline/${optionchange}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }) 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
       console.log(response.data.data)
       setPercentageLine(response.data.data)
-    }catch(err){
+    } catch (err) {
       toast.error(err.response.data.msg)
     }
-    try{
+    try {
       const response = await axios.get(`http://127.0.0.1:3002/api/v1/admin/getattemptedandnotattemptedquestionwisebar/${optionchange}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }) 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
       console.log(response.data.data)
       setAttemptedBar(response.data.data)
-    }catch(err){
+    } catch (err) {
       console.log(err)
       toast.error(err.response.data.msg)
     }
-  } 
+  }
   const change = (e) => {
     console.log(e.target.value);
     setOptionChange(e.target.value);
@@ -154,10 +155,21 @@ const PublishResults = () => {
         </Button>
       </Box>
       {
-        data && <AttemptedBarChart data={attemptedBar}/>
+        data && <AttemptedBarChart data={attemptedBar} />
       }
       {
-        data && <PercentageLineChart cdata={perecentageLine}/>
+        data && <PercentageLineChart cdata={perecentageLine} />
+      }
+      {
+        !showresult && <TextField
+          fullWidth
+          type="number"
+          required
+          label="Cutoff"
+          name="cutoff"
+          onChange={e => setValues(e.target.value)}
+          sx={{ gridColumn: "span 1" }}
+        />
       }
       {
         !showresult &&
