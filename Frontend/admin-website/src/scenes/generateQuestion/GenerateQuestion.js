@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import AWS from "aws-sdk";
 import {
   Box,
-  //   IconButton,
   Typography,
-  //   TextField,
   Divider,
   Table,
   TableBody,
@@ -17,7 +15,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  //   Button,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -32,7 +29,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../components/Header";
 import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
 import toast from "react-hot-toast";
@@ -218,30 +214,30 @@ const GenerateQuestion = () => {
   return (
     <Box m="20px">
       {/* HEADER */}
-      {/* <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Generate Question" subtitle="Create Question" />
-      </Box> */}
-      <h1>Generate Question</h1>
-      {/* <Box
+      </Box>
+      <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
         pt="10px"
         mb="20px"
-      > */}
-      <h3>Exam Code: </h3>
+      >
+
+      <Typography component="h1" variant="h3" fontWeight="bold" marginRight="10px">
+          Exam Code 
+      </Typography>
       <input
         style={{
           backgroundColor: "#f2f2f2",
           color: "black",
-          //   borderRadius: "3px",
-          borderTopLeftRadius: 15,
-          borderBottomLeftRadius: 15,
+          borderTopLeftRadius: 10,
+          borderBottomLeftRadius: 10,
           width: "20rem",
           height: "3.2rem",
           padding: "10px",
           border: "none",
-          marginBottom: 14,
         }}
         list="dataa"
         onChange={change}
@@ -254,7 +250,7 @@ const GenerateQuestion = () => {
       </datalist>
       <IconButton
         type="button"
-        style={{ borderTopRightRadius: 15, borderBottomRightRadius: 15 }}
+        style={{ borderTopRightRadius: 10, borderBottomRightRadius: 10 }}
         sx={{
           p: "15px",
           backgroundColor: "#0159ED",
@@ -266,7 +262,7 @@ const GenerateQuestion = () => {
       >
         <SearchIcon />
       </IconButton>
-      {/* </Box> */}
+      </Box>
       <Box>
         <div>
           {/* <h2>Generate Question</h2> */}
@@ -383,7 +379,7 @@ const GenerateQuestion = () => {
                 </MenuItem>
               ))}
             </TextField>
-            <Button type="submit" variant="contained" color="primary">
+            <Button type="submit" variant="contained" color="secondary">
               {uploading
                 ? "Uploading..."
                 : isLoading

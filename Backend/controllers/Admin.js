@@ -242,8 +242,8 @@ const createFromExistingExam = async (req, res) => {
   // // Parse the input date and format it as 'yyyy-mm-dd'
   // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const date = new Date(response.rows[0].last_registeration_date)
-  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
-  
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+
 
   const inserted_response = await pool.query(`insert into exam values(${adminId},'${newexamcode}','${startdate}','${starttime}','${endtime}',${response.rows[0].duration},'${response.rows[0].exam_name}','${response.rows[0].mode}',${response.rows[0].negative_marks},${response.rows[0].question_weightage},${response.rows[0].publish_result},${response.rows[0].israndom},'${response.rows[0].details}','${outputDateStr}');`)
   //copying questions of the refernce exam into new exam
@@ -299,12 +299,12 @@ const updateQuestion = async (req, res) => {
     throw new BadRequestError("Please provide valid Question ID");
   }
   let options_str = "array[";
-      for (let i = 0; i < number_of_options; ++i) {
-        options_str += `'${options[i]}'`;
-        if (i != number_of_options - 1) {
-          options_str += ",";
-        }
-      }
+  for (let i = 0; i < number_of_options; ++i) {
+    options_str += `'${options[i]}'`;
+    if (i != number_of_options - 1) {
+      options_str += ",";
+    }
+  }
   options_str += "]";
   const response = await pool.query(`update questions set description = '${description}',number_of_options=${number_of_options},options=${options_str},answer=${answer},image='${image ? image : NULL}' where questionid = ${questionid};`)
   res.status(StatusCodes.OK).json({ res: "Success" })
@@ -379,7 +379,7 @@ const getPastExamsByAdmin = async (req, res) => {
   // // Parse the input date and format it as 'yyyy-mm-dd'
   // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const date = new Date()
-  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 
   // Get the current hour, minute, and second
   const hours = date.getHours().toString().padStart(2, "0");
@@ -405,7 +405,7 @@ const getNewExamsByAdmin = async (req, res) => {
   // // Parse the input date and format it as 'yyyy-mm-dd'
   // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const date = new Date()
-  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 
   // Get the current hour, minute, and second
   const hours = date.getHours().toString().padStart(2, "0");
@@ -458,9 +458,9 @@ const getRegisteredStudents = async (req, res) => {
     throw new BadRequestError("Please provide valid examcode");
   }
   const response = await pool.query(`select s.name,s.email,s.phoneno,r.student_details from registered_exams as r inner join student as s on r.sid = s.sid where r.examcode = '${examcode}';`)
-  for(let i=0;i<response.rowCount;++i){
+  for (let i = 0; i < response.rowCount; ++i) {
     response.rows[i].student_details = JSON.parse(response.rows[i].student_details)
-    for(let key in response.rows[i].student_details){
+    for (let key in response.rows[i].student_details) {
       response.rows[i][key] = response.rows[i].student_details[key]
     }
     delete response.rows[i]['student_details']
