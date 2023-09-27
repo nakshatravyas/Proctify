@@ -22,7 +22,7 @@ const PastExams = () => {
 
     const fetchdata = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:3002/api/v1/admin/getallexams', {
+            const response = await axios.get('http://127.0.0.1:3002/api/v1/admin/getallpastexams', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

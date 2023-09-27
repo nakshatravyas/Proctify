@@ -17,7 +17,6 @@ import EditExam from "./scenes/editexam/EditExam"
 import EditProfile from "./scenes/editprofile/EditProfile";
 import { Toaster } from 'react-hot-toast';
 import StudentDetails from "./scenes/studentdetails/StudentDetails";
-import { Toaster } from "react-hot-toast";
 import GenerateQuestion from "./scenes/generateQuestion/GenerateQuestion";
 const router = createBrowserRouter([
   {
@@ -71,7 +70,8 @@ const router = createBrowserRouter([
       },
       {
         path: "publish_results", element: <PublishResults />
-      }, {
+      }, 
+      {
         path: "view_questions",
         element: <ViewQuestion />,
       },
