@@ -61,6 +61,8 @@ const ExamDetailsPopup = ({ open, onClose, examDetail }) => {
                 <TableCell>Mobile Detected</TableCell>
                 <TableCell>Suspicious Act</TableCell>
                 <TableCell>Noise Detected</TableCell>
+                <TableCell>Out of Frame</TableCell>
+                <TableCell>Not in Center</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -71,6 +73,8 @@ const ExamDetailsPopup = ({ open, onClose, examDetail }) => {
                   <TableCell>{row.mobile_detected}</TableCell>
                   <TableCell>{row.system_warnings}</TableCell>
                   <TableCell>{row.noise_warnings}</TableCell>
+                  <TableCell>{row.out_of_frame}</TableCell>
+                  <TableCell>{row.not_center}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

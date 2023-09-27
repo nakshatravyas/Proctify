@@ -142,7 +142,6 @@ const updateAdminDetails = async (req, res) => {
 const createNewExam = async (req, res) => {
   const { adminId } = req.user
   const { startdate, starttime, endtime, duration, exam_name, mode, negative_marks, question_weightage, isRandom, details, last_registeration_date } = req.body
-  console.log(req.body)
   if (!startdate || !starttime || !endtime || !duration || !exam_name || !mode || !details || !last_registeration_date) {
     throw new BadRequestError("Please provide required details");
   }
@@ -195,15 +194,15 @@ const createQuestions = async (req, res) => {
 }
 
 const setThreshold = async (req, res) => {
-  const { examcode, system_warnings, mobile_detected, cv_based_warnings, noise_warnings } = req.body
-  if (!system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings) {
+  const { examcode, system_warnings, mobile_detected, cv_based_warnings, noise_warnings,not_center,out_of_frame } = req.body
+  if (!system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings || !not_center || !out_of_frame) {
     throw new BadRequestError("Please provide required details");
   }
   const examcodecheck = await pool.query(`select * from exam where examcode like '${examcode}';`)
   if (examcodecheck.rowCount == 0) {
     throw new BadRequestError("Please provide valid examcode");
   }
-  const response = pool.query(`insert into threshold values('${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings});`)
+  const response = pool.query(`insert into threshold values('${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings},${not_center},${out_of_frame});`)
   res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
@@ -262,8 +261,8 @@ const createFromExistingExam = async (req, res) => {
   }
   //copying threshold value of the refernce exam into new exam
   const oldthreshold = await pool.query(`select * from threshold where examcode like '${examcode}';`)
-  if (oldthreshold.rowCount == 1) {
-    const newthreshold = await pool.query(`insert into threshold values('${newexamcode}',${oldthreshold.rows[0].system_warnings},${oldthreshold.rows[0].mobile_detected},${oldthreshold.rows[0].cv_based_warnings},${oldthreshold.rows[0].noise_warnings});`)
+  if (oldthreshold.rowCount >= 1) {
+    const newthreshold = await pool.query(`insert into threshold values('${newexamcode}',${oldthreshold.rows[0].system_warnings},${oldthreshold.rows[0].mobile_detected},${oldthreshold.rows[0].cv_based_warnings},${oldthreshold.rows[0].noise_warnings},${oldthreshold.rows[0].not_center},${oldthreshold.rows[0].out_of_frame});`)
   }
   res.status(StatusCodes.OK).json({ res: "Success", examcode: newexamcode })
 }
@@ -330,11 +329,11 @@ const getExam = async (req, res) => {
 }
 
 const setStudentThreshold = async (req, res) => {
-  const { sid, examcode, system_warnings, mobile_detected, cv_based_warnings, noise_warnings } = req.body
-  if (!sid || !examcode || !system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings) {
+  const { sid, examcode, system_warnings, mobile_detected, cv_based_warnings, noise_warnings,not_center,out_of_frame } = req.body
+  if (!sid || !examcode || !system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings || !not_center || !out_of_frame) {
     throw new BadRequestError("Please provide required details");
   }
-  const response = await pool.query(`insert into student_threshold values(${sid},'${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings});`)
+  const response = await pool.query(`insert into student_threshold values(${sid},'${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings},${not_center},${out_of_frame});`)
   res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
@@ -348,7 +347,7 @@ const getThresholdValueOfAllStudentsExamWise = async (req, res) => {
   if (isexamdone.rowCount == 0) {
     throw new BadRequestError("There are no logs available");
   }
-  const response = await pool.query(`select s.name,t.system_warnings,t.mobile_detected,t.cv_based_warnings,t.noise_warnings from student as s inner join student_threshold as t on s.sid = t.sid where examcode = '${examcode}';`)
+  const response = await pool.query(`select s.name,t.system_warnings,t.mobile_detected,t.cv_based_warnings,t.noise_warnings,t.not_center,t.out_of_frame from student as s inner join student_threshold as t on s.sid = t.sid where examcode = '${examcode}';`)
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 

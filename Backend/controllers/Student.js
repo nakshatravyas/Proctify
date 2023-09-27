@@ -119,7 +119,6 @@ const faceRegister = async (req, res) => {
   const { studentId } = req.user;
   const { imageBase64Data } = req.body;
   // console.log(imageBase64Data);
-  console.log(studentId);
   try {
     // Upload image to S3
     const imageUrl = await uploadImageToS3(
@@ -313,7 +312,6 @@ const canGiveExam = async (req, res) => {
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
-  console.log(`select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`)
   const response = await pool.query(
     `select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
@@ -501,7 +499,6 @@ const getRegisteredExam = async (req, res) => {
   // const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
   const date = new Date()
   const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
-  console.log(`select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${outputDateStr}';`)
   const response = await pool.query(
     `select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${outputDateStr}';`
   );
