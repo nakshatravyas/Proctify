@@ -501,6 +501,7 @@ const getRegisteredExam = async (req, res) => {
   // const outputDateStr = moment(inputDateStr, "DD/MM/YYYY").format("YYYY-MM-DD");
   const date = new Date()
   const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+  console.log(`select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${outputDateStr}';`)
   const response = await pool.query(
     `select * from registered_exams as r inner join exam as e on e.examcode = r.examcode where r.sid = ${studentId} and e.startdate >= '${outputDateStr}';`
   );
@@ -520,13 +521,18 @@ const getAllExams = async (req, res) => {
   // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const date = new Date()
   const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
-  const response = await pool.query(
-    `SELECT e.examcode, e.startdate, e.starttime, e.endtime,e.exam_name,e.negative_marks,e.question_weightage,e.duration,e.details
+//   const response = await pool.query(
+//     `SELECT e.examcode, e.startdate, e.starttime, e.endtime,e.exam_name,e.negative_marks,e.question_weightage,e.duration,e.details
+// FROM exam e
+// LEFT JOIN registered_exams rs ON e.examcode = rs.examcode
+// WHERE e.last_registeration_date >= '${outputDateStr}' AND (rs.sid IS NULL OR rs.sid != ${studentId});
+// `
+//   );
+const response = await pool.query(`SELECT e.examcode, e.startdate, e.starttime, e.endtime, e.last_registeration_date,e.exam_name,e.negative_marks,e.question_weightage,e.duration,e.details
 FROM exam e
-LEFT JOIN registered_exams rs ON e.examcode = rs.examcode
-WHERE e.last_registeration_date >= '${outputDateStr}' AND (rs.sid IS NULL OR rs.sid != ${studentId});
-`
-  );
+LEFT JOIN registered_exams rs ON e.examcode = rs.examcode AND rs.sid = ${studentId}
+WHERE e.last_registeration_date >= '${outputDateStr}'
+  AND rs.sid IS NULL;`)
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows });
 };
 
