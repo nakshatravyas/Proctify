@@ -334,7 +334,7 @@ const canGiveExam = async (req, res) => {
 
 const calculateResult = async (req, res) => {
   const { studentId } = req.user;
-  const { data } = req.body;
+  const data = req.body;
   const examcode = data[0].examcode;
   const response = await pool.query(
     `select * from exam where examcode like '${examcode}';`
@@ -342,6 +342,7 @@ const calculateResult = async (req, res) => {
   let negativemarks = response.rows[0].negative_marks;
   let questionweightage = response.rows[0].question_weightage;
   let marks = 0;
+  let totalmarks = 0
   for (let i = 0; i < data.length; ++i) {
     if (data[i].answer == data[i].selectedoption) {
       marks += questionweightage;
@@ -350,9 +351,20 @@ const calculateResult = async (req, res) => {
     } else {
       marks -= negativemarks;
     }
+    totalmarks+=questionweightage
+    let attempted = data[i].attempted==undefined?0:data[i].attempted;
+    let not_attempted = data[i].not_attempted==undefined?0:data[i].not_attempted;
+    if(data[i].selectedoption==-1){
+      not_attempted++;
+    }
+    else{
+      attempted++;
+    }
+    const updatecount = await pool.query(`update questions set attempted=${attempted},not_attempted=${not_attempted} where questionid=${data[i].questionid}`)
   }
+  let percentage = (marks/totalmarks)*100
   const resultupdate = await pool.query(
-    `insert into result values('${examcode}',${studentId},${marks});`
+    `insert into result values('${examcode}',${studentId},${marks},${percentage});`
   );
   // const deleteenrty = await pool.query(`delete from registered_exams where examcode like '${examcode}' and sid=${studentId};`)
   res.status(StatusCodes.OK).json({ res: "Success" });
@@ -379,7 +391,7 @@ const getSpecificExamResult = async (req, res) => {
     `select max(totalmarks),min(totalmarks),avg(totalmarks),count(totalmarks) from result group by examcode having examcode='${examcode}';`
   );
   const marks = await pool.query(
-    `select totalmarks from result where sid = ${studentId};`
+    `select totalmarks,percentage from result where sid = ${studentId};`
   );
   const user_marks = marks.rows[0].totalmarks;
   // console.log(user_marks)
@@ -395,6 +407,15 @@ const getSpecificExamResult = async (req, res) => {
   // let percentile = (index / Number(response.rows[0].count))*100
   // console.log(percentile_calc.rows)
   // console.log(percentile)
+  let status = ''
+  
+  if(checkexamcode.rows[0].cutoff <= user_marks){
+    status = 'PASS'
+  }
+  else{
+    status = 'FAIL'
+  }
+
   res.status(StatusCodes.OK).json({
     res: "Success",
     data: {
@@ -403,6 +424,9 @@ const getSpecificExamResult = async (req, res) => {
       avg: response.rows[0].avg,
       count: response.rows[0].count,
       marks: user_marks,
+      cutoff:checkexamcode.rows[0].cutoff,
+      percentage:marks.rows[0].percentage,
+      status
     },
   });
 };
