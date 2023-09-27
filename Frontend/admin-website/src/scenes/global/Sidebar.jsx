@@ -18,6 +18,7 @@ import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import PreviewOutlinedIcon from '@mui/icons-material/PreviewOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   return (
@@ -60,12 +61,26 @@ const Sidebar = ({ isSticky }) => {
         },
         "& .pro-inner-item": {
           padding: "5px 35px 5px 20px !important",
+          borderRadius:"15px"
+        },
+        "& .pro-item-content":{
+          fontSize:"18px"
+        },
+        "& .pro-inner-item p":{
+          fontSize:"16px"
         },
         "& .pro-inner-item:hover": {
           color: "#0159ED !important",
+          background:"#ffffff !important"
+        },
+        "& .pro-menu-item":{
+          marginBottom:"10px",
+          borderRadius:"15px"
         },
         "& .pro-menu-item.active": {
           color: "#0159ED !important",
+          background:"#ffffff !important",
+          
         },
       }}
     >
@@ -87,7 +102,7 @@ const Sidebar = ({ isSticky }) => {
           </Box>
 
 
-          <Box paddingLeft="10%">
+          <Box >
             <Item
               title="Ongoing Exams"
               to=""
@@ -97,7 +112,7 @@ const Sidebar = ({ isSticky }) => {
             />
 
             <SubMenu title="Create Exam" icon={<AppRegistrationIcon />} style={{
-              color: "white",
+              color: "white"
             }}>
               <Item
                 title="Create New Exam"
@@ -122,16 +137,36 @@ const Sidebar = ({ isSticky }) => {
               selected={selected}
               setSelected={setSelected}
             />
+            <SubMenu title="View Exams" icon={<PreviewOutlinedIcon />} style={{
+              color: "white",
+            }}>
+
+            <Item
+              title="Edit Exams"
+              to="edit_exams"
+              icon={<HistoryOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+              />
             <Item
               title="Past Exams"
               to="past_exams"
               icon={<HistoryOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+              />
+            </SubMenu>
+
             <Item
               title="View Questions"
               to="view_questions"
+              icon={<NoteAltOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Student Details"
+              to="student_details"
               icon={<NoteAltOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

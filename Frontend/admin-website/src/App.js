@@ -13,8 +13,10 @@ import PublishResults from "./scenes/publishresults/PublishResults";
 import Home from "./scenes/Home/Home"
 import Register from "./scenes/register/Register" 
 import ForgotPass from "./scenes/forgotpassword/ForgotPass";
+import EditExam from "./scenes/editexam/EditExam"
 import EditProfile from "./scenes/editprofile/EditProfile";
 import { Toaster } from 'react-hot-toast';
+import StudentDetails from "./scenes/studentdetails/StudentDetails";
 const router = createBrowserRouter([
   {
     path: '/',
@@ -48,7 +50,13 @@ const router = createBrowserRouter([
         path: "view_questions", element: <ViewQuestion />
       },
       {
+        path: "edit_exams", element: <EditExam />
+      },
+      {
         path: "past_exams", element: <PastExams />
+      },
+      {
+        path: "student_details", element: <StudentDetails />
       },
       {
         path: "publish_results", element: <PublishResults />

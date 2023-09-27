@@ -176,9 +176,15 @@ const NewExam = () => {
             <FormControlLabel value={false} control={<Radio />} label="No" name="no" />
           </RadioGroup>
         </FormControl>
+        {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
+          <DemoContainer components={['DatePicker']} sx={{ gridColumn: "span 2" }}>
+            <DatePicker label="Last Date" name="latexam_date" sx={{ width: "100%" }}
+              onChange={e => setValues({ ...values, startdate: e.format() })} />
+          </DemoContainer>
+        </LocalizationProvider> */}
       </Box>
       <Divider sx={{ my: 2 }} />
-      <Header title="Student Details" subtitle="Enter the details you want from student" />
+      <Header title="Student Details" subtitle="Enter the details you want from student"/>
       {formData.map((fieldSet, index) => (
         <Paper key={index} elevation={3} style={{ padding: '16px', marginBottom: '16px' }}>
           <Grid container spacing={2} style={{ justifyContent: "space-evenly" }}>
