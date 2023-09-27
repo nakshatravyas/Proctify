@@ -35,7 +35,7 @@ const VerifyPhoto = () => {
       console.log(response.data);
 
       storeExamDataInLocal();
-       const check = () => {
+      const check = () => {
         console.log("Hello");
         localStorage.setItem("Hello", "Done");
         const event = new StorageEvent("storage", {
@@ -69,7 +69,7 @@ const VerifyPhoto = () => {
         state: location?.state,
       });
       // document.documentElement.requestFullscreen().then(() => {
-        
+
       // });
     } catch (error) {
       console.error("Exam Data Fetching error:", error.response.data.msg);

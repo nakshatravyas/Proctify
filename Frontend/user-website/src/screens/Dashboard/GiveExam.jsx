@@ -1,15 +1,10 @@
-import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { useLocation } from "react-router-dom";
 import ExamCard from "../../components/ExamCard";
 
 const GiveExam = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (!location.state) {
-      navigate("/dashboard");
-    }
-  }, [location.state, navigate]);
+
   // useEffect(() => {
   //   const blockShortcuts = (event) => {
   //     if (
@@ -30,7 +25,7 @@ const GiveExam = () => {
 
   return (
     <main className="flex items-start select-none">
-      {/* <section className="w-full min-h-[100vh] mx-auto flex flex-col">
+      <section className="w-full min-h-[100vh] mx-auto flex flex-col">
         <section className="flex justify-between items-center w-full mx-auto py-4 px-10 bg-white shadow border-b">
           <p className="font-semibold">
             Exam: <span className="font-normal">{location?.state?.name}</span>
@@ -43,7 +38,7 @@ const GiveExam = () => {
         <section className="flex justify-between items-start">
           <ExamCard duration={location.state.duration} />
         </section>
-      </section> */}
+      </section>
     </main>
   );
 };

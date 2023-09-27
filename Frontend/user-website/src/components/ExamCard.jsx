@@ -1,9 +1,11 @@
 import { Player } from "@lottiefiles/react-lottie-player";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import OptionCard from "./OptionCard";
 import { useNavigate } from "react-router";
+import Webcam from "react-webcam";
 
 const ExamCard = (props) => {
+  const webcamRef = useRef(null);
   const [quePointer, setQuePointer] = useState(0);
   const questions = JSON.parse(localStorage.getItem("questions"));
   const [selectedOption, setSelectedOption] = useState(null);
@@ -87,7 +89,7 @@ const ExamCard = (props) => {
           )}
         </div>
       </div>
-      <div className="w-[18%] flex justify-center items-start sticky top-0">
+      <div className="w-[18%] flex justify-start items-center sticky top-0 flex-col px-4 bg-slate-100 h-[90vh] shadow border-l">
         <p className="mt-3 text-2xl font-semibold py-3 px-4 rounded-md flex justify-center items-center tracking-wider w-20%]">
           {`${Math.floor(timer / 60)} : ${timer % 60}`}
           <span className="ml-1">
@@ -96,10 +98,13 @@ const ExamCard = (props) => {
               className="w-12"
               loop
               autoplay
-              speed={10}
+              speed={5}
             />
           </span>
         </p>
+        <div className="aspect-square">
+          <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" />
+        </div>
       </div>
     </section>
   );
