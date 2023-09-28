@@ -70,7 +70,7 @@ const StudentDetails = () => {
 
   return (
     <Box m="20px">
-      <Header title="Publish Result" subtitle="Publish result for exam" />
+      <Header title="Student Details" subtitle="Registered student details" />
       <Box
         display="flex"
         justifyContent="center"
@@ -91,7 +91,7 @@ const StudentDetails = () => {
             style={{
               backgroundColor: '#e0e0e0',
               color: 'black',
-              borderRadius: '3px',
+              borderRadius: '10px 0px 0px 10px',
               width: '20rem',
               height: '3.2rem',
               padding: '10px',

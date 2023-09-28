@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./scenes/dashboard";
 import Global from "./scenes/global/global";
-import Login from "./scenes/login";
 import Exam from "./scenes/exam";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -11,7 +10,6 @@ import ViewQuestion from "./scenes/viewquestions/ViewQuestion";
 import PastExams from "./scenes/pastexams/PastExams";
 import PublishResults from "./scenes/publishresults/PublishResults";
 import Home from "./scenes/Home/Home";
-import Register from "./scenes/register/Register";
 import ForgotPass from "./scenes/forgotpassword/ForgotPass";
 import EditExam from "./scenes/editexam/EditExam"
 import EditProfile from "./scenes/editprofile/EditProfile";
@@ -22,14 +20,6 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/register",
-    element: <Register />,
   },
   {
     path: "/forgotpassword",
@@ -70,7 +60,7 @@ const router = createBrowserRouter([
       },
       {
         path: "publish_results", element: <PublishResults />
-      }, 
+      },
       {
         path: "view_questions",
         element: <ViewQuestion />,
