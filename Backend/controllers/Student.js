@@ -554,6 +554,49 @@ const resetPassword = async (req, res) => {
   res.status(StatusCodes.OK).json({ res: "Success" });
 };
 
+const emailVerification = async(req,res)=>{
+  const {email} = req.body
+  if (!email) {
+    throw new BadRequestError("Please provide email");
+  }
+  const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
+  const check = await pool.query(`select * from student where email like '${email}';`)
+  if (check.rowCount == 1) {
+    throw new BadRequestError("This email already exists");
+  }
+  const owner = await pool.query(`update student set otp = '${otp}' where email like '${email}';`)
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // hostname
+    secureConnection: false, // TLS requires secureConnection to be false
+    port: 587, // port for secure SMTP
+    tls: {
+      ciphers: "SSLv3",
+    },
+    auth: {
+      user: "proctorsih@gmail.com",
+      pass: "opuueiosrtjuwntj",
+    },
+  });
+
+  const mailOptions = {
+    from: '"Proctify " <proctorsih@gmail.com>', // sender address (who sends)
+    to: `${email}`, // list of receivers (who receives)
+    subject: "OTP for Validating your email ", // Subject line
+    text: `Your OTP for validating the email for Student website is ${otp}, please enter this OTP in your Student website to validate your email.
+  -Thanks,
+  Team Proctify  `, // plaintext body
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return console.log(error);
+    }
+
+    res.status(StatusCodes.OK).json({ otp });
+  });
+  
+}
+
 module.exports = {
   forgotPasswordStudent,
   loginStudent,
@@ -576,4 +619,5 @@ module.exports = {
   getRegisteredExam,
   getAllExams,
   resetPassword,
+  emailVerification
 };
