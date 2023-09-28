@@ -43,7 +43,7 @@ const Login = () => {
       );
       console.log(response.data);
       toast.success("Registered Successful!");
-      navigate("dashboard/registered-exams");
+      navigate("/dashboard/registered-exams");
     } catch (err) {
       console.log(err.response.data.msg);
       toast.error(err.response.data.msg);

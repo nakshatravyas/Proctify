@@ -16,6 +16,10 @@ const VerifyPhoto = () => {
     setImageBase64Data(imageSrc);
   }, [webcamRef]);
 
+  const Recapture = useCallback(() => {
+    setImageBase64Data(null);
+  }, []);
+
   const verifyProfile = async () => {
     const token = localStorage.getItem("token");
     console.log(token);
@@ -82,12 +86,22 @@ const VerifyPhoto = () => {
         <p className="text-2xl font-semibold my-4">Verify Profile</p>
         <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" />
         <div className="flex justify-center items-center w-full ">
-          <button
-            className="bg-blue-600 w-full mt-5 text-white px-6 py-2 rounded-md transition_fade hover:shadow-lg shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 bg-gradient-to-tr from-blue-600 to-blue-700 mr-4"
-            onClick={capture}
-          >
-            Capture
-          </button>
+          {!imageBase64Data && (
+            <button
+              className="bg-blue-600 w-full mt-5 text-white px-6 py-2 rounded-md transition_fade hover:shadow-lg shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 bg-gradient-to-tr from-blue-600 to-blue-700 mr-4"
+              onClick={capture}
+            >
+              Capture
+            </button>
+          )}
+          {imageBase64Data && (
+            <button
+              className="bg-blue-600 w-full mt-5 text-white px-6 py-2 rounded-md transition_fade hover:shadow-lg shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 bg-gradient-to-tr from-blue-600 to-blue-700 mr-4"
+              onClick={Recapture}
+            >
+              Recapture
+            </button>
+          )}
           <button
             className="bg-blue-600 w-full mt-5 text-white px-6 py-2 rounded-md transition_fade hover:shadow-lg shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 bg-gradient-to-tr from-blue-600 to-blue-700 "
             onClick={verifyProfile}

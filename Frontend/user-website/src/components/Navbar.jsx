@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -7,20 +7,20 @@ const Navbar = () => {
   const regex = /^\/dashboard\/exam\/\d+$/;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      if (location.pathname !== "/register") {
-        navigate("/");
-      }
-      setLogin(false);
-    } else {
-      if (location.pathname === "/register" || location.pathname === "/") {
-        setLogin(true);
-        navigate("/dashboard");
-      }
-    }
-  }, [location.pathname, navigate]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     if (location.pathname !== "/register" ||) {
+  //       navigate("/");
+  //     }
+  //     setLogin(false);
+  //   } else {
+  //     if (location.pathname === "/register" || location.pathname === "/") {
+  //       setLogin(true);
+  //       navigate("/dashboard");
+  //     }
+  //   }
+  // }, [location.pathname, navigate]);
 
   const logoutHandler = () => {
     localStorage.removeItem("token");
