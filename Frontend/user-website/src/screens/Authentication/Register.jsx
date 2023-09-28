@@ -22,21 +22,18 @@ const Register = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `http://127.0.0.1:3002/api/v1/student/register`,
+        `http://127.0.0.1:3002/api/v1/student/emailverification`,
         data
       );
-      console.log(response.data.token);
-      localStorage.setItem("token", response.data.token);
-      toast.success("Registration successful!");
-      navigate("/verify");
+      console.log(response);
+      toast.success("Verification Mail Send!");
+      navigate("/verify-register", {
+        state: { data, otp: response.data.otp },
+      });
     } catch (err) {
       console.log(err.response.data.msg);
       toast.error(err.response.data.msg);
     }
-    // if (!data.email || !data.password || !data.name || !data.phoneno) {
-    //   toast.error("All fields are required");
-    //   return;
-    // }
 
     setData({
       name: "",

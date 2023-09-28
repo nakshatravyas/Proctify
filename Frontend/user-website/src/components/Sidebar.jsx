@@ -40,7 +40,7 @@ const Sidebar = () => {
     },
   ];
   return (
-    <section className="h-[90vh] w-[20%] bg-blue-950 shadow-xl shadow-blue-600/20 sticky left-0 top-0">
+    <section className="h-[100vh] w-[20%] bg-blue-950 shadow-xl shadow-blue-600/20 sticky left-0 top-0">
       <ul className="pt-10">
         {menuList.map((item) => {
           return (

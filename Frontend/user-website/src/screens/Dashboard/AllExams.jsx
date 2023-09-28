@@ -67,6 +67,7 @@ const AllExams = () => {
               />
             );
           })}
+
         {!loading && examData.length === 0 && (
           <p className="mt-10">No Exams Available Now!</p>
         )}

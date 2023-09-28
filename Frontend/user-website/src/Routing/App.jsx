@@ -20,6 +20,7 @@ import ChangePassword from "../screens/Authentication/ChangePassword";
 import FinishExam from "../screens/Dashboard/FinishExam";
 import RegisterExam from "../screens/Dashboard/RegisterExam";
 import AllExams from "../screens/Dashboard/AllExams";
+import VerifyRegister from "../screens/Authentication/VerifyRegister";
 const App = () => {
   return (
     <BrowserRouter>
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/verify" element={<RegisterProfile />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/verify-register" element={<VerifyRegister />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard" element={<AllExams />} />
