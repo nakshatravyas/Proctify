@@ -325,10 +325,11 @@ const ViewQuestion = () => {
   return (
     <Box m="20px">
       {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+      {/* <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="View Questions" subtitle="Update or Delete questions" />
-      </Box>
-      
+      </Box> */}
+      <h1 style={{ marginBottom: -10 }}>View Questions</h1>
+      <h2 style={{ color: "#1774D4" }}>Update or Delete questions</h2>
       <Box
         display="flex"
         justifyContent="center"
@@ -348,8 +349,7 @@ const ViewQuestion = () => {
           style={{
             backgroundColor: "#e0e0e0",
             color: "black",
-            borderTopLeftRadius: "10px",
-            borderBottomLeftRadius: "10px",
+            borderRadius: "3px",
             width: "20rem",
             height: "3.2rem",
             padding: "10px",
@@ -369,9 +369,8 @@ const ViewQuestion = () => {
           sx={{
             p: "15px",
             backgroundColor: "#0159ED",
+            borderRadius: "0",
             color: "white",
-            borderRadius:"0px 10px 10px 0px",
-            border:"none",
             "&:hover": { backgroundColor: "#1976d2" },
           }}
           onClick={searchquestion}
