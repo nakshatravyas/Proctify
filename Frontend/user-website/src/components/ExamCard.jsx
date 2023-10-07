@@ -55,10 +55,10 @@ const ExamCard = (props) => {
           Que. {quePointer + 1}
         </p>
         <p className="mt-4 font-medium leading-8 text-lg">
-          {questions[quePointer].description}
+          {questions[quePointer]?.description}
         </p>
         <ul className="mt-4">
-          {questions[quePointer].options.map((item, index) => {
+          {questions[quePointer]?.options.map((item, index) => {
             return (
               <OptionCard
                 onClick={() => setSelectedOption(index)}
