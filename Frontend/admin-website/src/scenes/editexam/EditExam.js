@@ -66,6 +66,12 @@ const EditExam = () => {
       );
 
       const { data } = response.data;
+      data.forEach((exam) => {
+        if (exam.details) {
+          exam.details = JSON.parse(exam.details);
+        }
+      });
+      console.log(data)
       setExams(data);
     } catch (err) {
       console.error(err.response.data.msg);
