@@ -23,6 +23,7 @@ const {
   getRegisteredExam,
   getAllExams,
   resetPassword,
+  emailVerification
 } = require("../controllers/Student");
 
 const studentMiddleware = require("../middleware/authentication_student");
@@ -81,5 +82,8 @@ router.route("/getallexams").get(studentMiddleware, getAllExams);
 
 //this will reset password by taking current password and taking new password
 router.route("/resetpassword").post(studentMiddleware, resetPassword);
+
+//this screen will take otp and will verify email written by user in previous screen
+router.route("/emailverification").post(emailVerification)
 
 module.exports = router;

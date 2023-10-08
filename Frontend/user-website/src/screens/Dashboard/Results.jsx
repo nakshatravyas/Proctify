@@ -77,6 +77,9 @@ const Result = () => {
       average: response.data.data.avg,
       maxmarks: response.data.data.max,
       minmarks: response.data.data.min,
+      percentage:response.data.data.percentage,
+      cutoff:response.data.data.cutoff,
+      status:response.data.data.status,
     });
   };
   return (
@@ -121,6 +124,18 @@ const Result = () => {
                 <tr>
                   <td class="p-2 border">Max Marks</td>
                   <td class="p-2 border">{details.maxmarks}</td>
+                </tr>
+                <tr>
+                  <td class="p-2 border">Percentage</td>
+                  <td class="p-2 border">{details.percentage}</td>
+                </tr>
+                <tr>
+                  <td class="p-2 border">Cut Off</td>
+                  <td class="p-2 border">{details.cutoff}</td>
+                </tr>
+                <tr>
+                  <td class="p-2 border">Status</td>
+                  <td class="p-2 border">{details.status}</td>
                 </tr>
               </table>
             </div>

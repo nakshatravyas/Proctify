@@ -119,7 +119,6 @@ const faceRegister = async (req, res) => {
   const { studentId } = req.user;
   const { imageBase64Data } = req.body;
   // console.log(imageBase64Data);
-  console.log(studentId);
   try {
     // Upload image to S3
     const imageUrl = await uploadImageToS3(
@@ -313,7 +312,6 @@ const canGiveExam = async (req, res) => {
 
   // Create the time string in hh:mm:ss format
   const currentTime = `${hours}:${minutes}:${seconds}`;
-  console.log(`select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`)
   const response = await pool.query(
     `select * from exam where startdate = '${outputDateStr}' and starttime<='${currentTime}' and endtime>='${currentTime}' and examcode='${examcode}';`
   );
@@ -520,13 +518,18 @@ const getAllExams = async (req, res) => {
   // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const date = new Date()
   const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
-  const response = await pool.query(
-    `SELECT e.examcode, e.startdate, e.starttime, e.endtime,e.exam_name,e.negative_marks,e.question_weightage,e.duration,e.details
+//   const response = await pool.query(
+//     `SELECT e.examcode, e.startdate, e.starttime, e.endtime,e.exam_name,e.negative_marks,e.question_weightage,e.duration,e.details
+// FROM exam e
+// LEFT JOIN registered_exams rs ON e.examcode = rs.examcode
+// WHERE e.last_registeration_date >= '${outputDateStr}' AND (rs.sid IS NULL OR rs.sid != ${studentId});
+// `
+//   );
+const response = await pool.query(`SELECT e.examcode, e.startdate, e.starttime, e.endtime, e.last_registeration_date,e.exam_name,e.negative_marks,e.question_weightage,e.duration,e.details
 FROM exam e
-LEFT JOIN registered_exams rs ON e.examcode = rs.examcode
-WHERE e.last_registeration_date >= '${outputDateStr}' AND (rs.sid IS NULL OR rs.sid != ${studentId});
-`
-  );
+LEFT JOIN registered_exams rs ON e.examcode = rs.examcode AND rs.sid = ${studentId}
+WHERE e.last_registeration_date >= '${outputDateStr}'
+  AND rs.sid IS NULL;`)
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows });
 };
 
@@ -551,6 +554,49 @@ const resetPassword = async (req, res) => {
   res.status(StatusCodes.OK).json({ res: "Success" });
 };
 
+const emailVerification = async(req,res)=>{
+  const {email} = req.body
+  if (!email) {
+    throw new BadRequestError("Please provide email");
+  }
+  const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
+  const check = await pool.query(`select * from student where email like '${email}';`)
+  if (check.rowCount == 1) {
+    throw new BadRequestError("This email already exists");
+  }
+  const owner = await pool.query(`update student set otp = '${otp}' where email like '${email}';`)
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // hostname
+    secureConnection: false, // TLS requires secureConnection to be false
+    port: 587, // port for secure SMTP
+    tls: {
+      ciphers: "SSLv3",
+    },
+    auth: {
+      user: "proctorsih@gmail.com",
+      pass: "opuueiosrtjuwntj",
+    },
+  });
+
+  const mailOptions = {
+    from: '"Proctify " <proctorsih@gmail.com>', // sender address (who sends)
+    to: `${email}`, // list of receivers (who receives)
+    subject: "OTP for Validating your email ", // Subject line
+    text: `Your OTP for validating the email for Student website is ${otp}, please enter this OTP in your Student website to validate your email.
+  -Thanks,
+  Team Proctify  `, // plaintext body
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return console.log(error);
+    }
+
+    res.status(StatusCodes.OK).json({ otp });
+  });
+  
+}
+
 module.exports = {
   forgotPasswordStudent,
   loginStudent,
@@ -573,4 +619,5 @@ module.exports = {
   getRegisteredExam,
   getAllExams,
   resetPassword,
+  emailVerification
 };

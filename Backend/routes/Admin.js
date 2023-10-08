@@ -29,7 +29,8 @@ const {
   getRegisteredStudents,
   getQuestion,
   getAttemptedAndNotAttemptedQuestionWiseBar,
-  getStudentCountInPercentageRangeLine
+  getStudentCountInPercentageRangeLine,
+  emailVerification
 } = require("../controllers/Admin");
 
 const adminMiddleware = require("../middleware/authentication_admin");
@@ -105,6 +106,9 @@ router.route("/getattemptedandnotattemptedquestionwisebar/:examcode").get(adminM
 
 //get the data that how many students are their in particular range of percentage - this data will be fed in bar graph
 router.route("/getstudentcountinpercentagerangeline/:examcode") .get(adminMiddleware,getStudentCountInPercentageRangeLine)
+
+//this screen will take otp and will verify email written by user in previous screen
+router.route("/emailverification").post(emailVerification)
 
 
 module.exports = router;

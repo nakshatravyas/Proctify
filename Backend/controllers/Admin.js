@@ -142,7 +142,6 @@ const updateAdminDetails = async (req, res) => {
 const createNewExam = async (req, res) => {
   const { adminId } = req.user
   const { startdate, starttime, endtime, duration, exam_name, mode, negative_marks, question_weightage, isRandom, details, last_registeration_date } = req.body
-  console.log(req.body)
   if (!startdate || !starttime || !endtime || !duration || !exam_name || !mode || !details || !last_registeration_date) {
     throw new BadRequestError("Please provide required details");
   }
@@ -195,15 +194,15 @@ const createQuestions = async (req, res) => {
 }
 
 const setThreshold = async (req, res) => {
-  const { examcode, system_warnings, mobile_detected, cv_based_warnings, noise_warnings } = req.body
-  if (!system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings) {
+  const { examcode, system_warnings, mobile_detected, cv_based_warnings, noise_warnings,not_center,out_of_frame } = req.body
+  if (!system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings || !not_center || !out_of_frame) {
     throw new BadRequestError("Please provide required details");
   }
   const examcodecheck = await pool.query(`select * from exam where examcode like '${examcode}';`)
   if (examcodecheck.rowCount == 0) {
     throw new BadRequestError("Please provide valid examcode");
   }
-  const response = pool.query(`insert into threshold values('${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings});`)
+  const response = pool.query(`insert into threshold values('${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings},${not_center},${out_of_frame});`)
   res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
@@ -242,8 +241,8 @@ const createFromExistingExam = async (req, res) => {
   // // Parse the input date and format it as 'yyyy-mm-dd'
   // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const date = new Date(response.rows[0].last_registeration_date)
-  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
-  
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+
 
   const inserted_response = await pool.query(`insert into exam values(${adminId},'${newexamcode}','${startdate}','${starttime}','${endtime}',${response.rows[0].duration},'${response.rows[0].exam_name}','${response.rows[0].mode}',${response.rows[0].negative_marks},${response.rows[0].question_weightage},${response.rows[0].publish_result},${response.rows[0].israndom},'${response.rows[0].details}','${outputDateStr}');`)
   //copying questions of the refernce exam into new exam
@@ -262,8 +261,8 @@ const createFromExistingExam = async (req, res) => {
   }
   //copying threshold value of the refernce exam into new exam
   const oldthreshold = await pool.query(`select * from threshold where examcode like '${examcode}';`)
-  if (oldthreshold.rowCount == 1) {
-    const newthreshold = await pool.query(`insert into threshold values('${newexamcode}',${oldthreshold.rows[0].system_warnings},${oldthreshold.rows[0].mobile_detected},${oldthreshold.rows[0].cv_based_warnings},${oldthreshold.rows[0].noise_warnings});`)
+  if (oldthreshold.rowCount >= 1) {
+    const newthreshold = await pool.query(`insert into threshold values('${newexamcode}',${oldthreshold.rows[0].system_warnings},${oldthreshold.rows[0].mobile_detected},${oldthreshold.rows[0].cv_based_warnings},${oldthreshold.rows[0].noise_warnings},${oldthreshold.rows[0].not_center},${oldthreshold.rows[0].out_of_frame});`)
   }
   res.status(StatusCodes.OK).json({ res: "Success", examcode: newexamcode })
 }
@@ -299,12 +298,12 @@ const updateQuestion = async (req, res) => {
     throw new BadRequestError("Please provide valid Question ID");
   }
   let options_str = "array[";
-      for (let i = 0; i < number_of_options; ++i) {
-        options_str += `'${options[i]}'`;
-        if (i != number_of_options - 1) {
-          options_str += ",";
-        }
-      }
+  for (let i = 0; i < number_of_options; ++i) {
+    options_str += `'${options[i]}'`;
+    if (i != number_of_options - 1) {
+      options_str += ",";
+    }
+  }
   options_str += "]";
   const response = await pool.query(`update questions set description = '${description}',number_of_options=${number_of_options},options=${options_str},answer=${answer},image='${image ? image : NULL}' where questionid = ${questionid};`)
   res.status(StatusCodes.OK).json({ res: "Success" })
@@ -330,11 +329,11 @@ const getExam = async (req, res) => {
 }
 
 const setStudentThreshold = async (req, res) => {
-  const { sid, examcode, system_warnings, mobile_detected, cv_based_warnings, noise_warnings } = req.body
-  if (!sid || !examcode || !system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings) {
+  const { sid, examcode, system_warnings, mobile_detected, cv_based_warnings, noise_warnings,not_center,out_of_frame } = req.body
+  if (!sid || !examcode || !system_warnings || !mobile_detected || !cv_based_warnings || !noise_warnings || !not_center || !out_of_frame) {
     throw new BadRequestError("Please provide required details");
   }
-  const response = await pool.query(`insert into student_threshold values(${sid},'${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings});`)
+  const response = await pool.query(`insert into student_threshold values(${sid},'${examcode}',${system_warnings},${mobile_detected},${cv_based_warnings},${noise_warnings},${not_center},${out_of_frame});`)
   res.status(StatusCodes.OK).json({ res: "Success" })
 }
 
@@ -348,7 +347,7 @@ const getThresholdValueOfAllStudentsExamWise = async (req, res) => {
   if (isexamdone.rowCount == 0) {
     throw new BadRequestError("There are no logs available");
   }
-  const response = await pool.query(`select s.name,t.system_warnings,t.mobile_detected,t.cv_based_warnings,t.noise_warnings from student as s inner join student_threshold as t on s.sid = t.sid where examcode = '${examcode}';`)
+  const response = await pool.query(`select s.name,t.system_warnings,t.mobile_detected,t.cv_based_warnings,t.noise_warnings,t.not_center,t.out_of_frame from student as s inner join student_threshold as t on s.sid = t.sid where examcode = '${examcode}';`)
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
@@ -379,7 +378,7 @@ const getPastExamsByAdmin = async (req, res) => {
   // // Parse the input date and format it as 'yyyy-mm-dd'
   // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const date = new Date()
-  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 
   // Get the current hour, minute, and second
   const hours = date.getHours().toString().padStart(2, "0");
@@ -405,7 +404,7 @@ const getNewExamsByAdmin = async (req, res) => {
   // // Parse the input date and format it as 'yyyy-mm-dd'
   // const outputDateStr = moment(inputDateStr, "MM/DD/YYYY").format("YYYY-MM-DD");
   const date = new Date()
-  const outputDateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+  const outputDateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 
   // Get the current hour, minute, and second
   const hours = date.getHours().toString().padStart(2, "0");
@@ -458,6 +457,13 @@ const getRegisteredStudents = async (req, res) => {
     throw new BadRequestError("Please provide valid examcode");
   }
   const response = await pool.query(`select s.name,s.email,s.phoneno,r.student_details from registered_exams as r inner join student as s on r.sid = s.sid where r.examcode = '${examcode}';`)
+  for (let i = 0; i < response.rowCount; ++i) {
+    response.rows[i].student_details = JSON.parse(response.rows[i].student_details)
+    for (let key in response.rows[i].student_details) {
+      response.rows[i][key] = response.rows[i].student_details[key]
+    }
+    delete response.rows[i]['student_details']
+  }
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
@@ -507,7 +513,48 @@ const getAttemptedAndNotAttemptedQuestionWiseBar = async (req, res) => {
   res.status(StatusCodes.OK).json({ res: "Success", data: response.rows })
 }
 
+const emailVerification = async(req,res)=>{
+  const {email} = req.body
+  if (!email) {
+    throw new BadRequestError("Please provide email");
+  }
+  const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
+  const check = await pool.query(`select * from admin where email like '${email}';`)
+  if (check.rowCount == 1) {
+    throw new BadRequestError("This email already exists");
+  }
+  const owner = await pool.query(`update admin set otp = '${otp}' where email like '${email}';`)
 
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // hostname
+    secureConnection: false, // TLS requires secureConnection to be false
+    port: 587, // port for secure SMTP
+    tls: {
+      ciphers: "SSLv3",
+    },
+    auth: {
+      user: "proctorsih@gmail.com",
+      pass: "opuueiosrtjuwntj",
+    },
+  });
+
+  const mailOptions = {
+    from: '"Proctify " <proctorsih@gmail.com>', // sender address (who sends)
+    to: `${email}`, // list of receivers (who receives)
+    subject: "OTP for Validating your email ", // Subject line
+    text: `Your OTP for validating the email for Admin website is ${otp}, please enter this OTP in your Admin website to validate your email.
+  -Thanks,
+  Team Proctify  `, // plaintext body
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return console.log(error);
+    }
+
+    res.status(StatusCodes.OK).json({ otp });
+  });
+  
+}
 
 module.exports = {
   forgotPasswordAdmin,
@@ -537,5 +584,6 @@ module.exports = {
   getRegisteredStudents,
   getQuestion,
   getStudentCountInPercentageRangeLine,
-  getAttemptedAndNotAttemptedQuestionWiseBar
+  getAttemptedAndNotAttemptedQuestionWiseBar,
+  emailVerification
 }

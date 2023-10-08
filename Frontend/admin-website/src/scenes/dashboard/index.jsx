@@ -411,10 +411,14 @@ const Dashboard = () => {
 
   return (
     <Box m="20px">
-      <h1 style={{ marginBottom: -10 }}>Ongoing Exams</h1>
-      <h3 style={{ color: "#1774D4", fontWeight: "medium", fontSize: 19 }}>
-        Live exam monitoring
-      </h3>
+      {/* HEADER */}
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Header title="Ongoing Exams" subtitle="Search for a particular exam" />
+      </Box>
+
+      {/* </Box> */}
+
+      {/* GRID & CHARTS */}
       <Box
         display="flex"
         justifyContent="center"
