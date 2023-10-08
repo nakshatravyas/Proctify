@@ -23,7 +23,168 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const Exam = () => {
+const Exam = ({ ws }) => {
+  const videoref = React.useRef();
+  // const [last_index, setLastIndex] = React.useState(0)
+  // const [currStudent, setCurrStudent] = React.useState(null)
+  // const [live_students, setLiveStudents] = React.useState({})
+  let last_index = 0;
+  let current_student = null;
+  let live_students = {};
+  const [msg, setMsg] = React.useState({});
+  // React.useEffect(() => {
+  //   setws(ws)
+  // }, [])
+  // React.useEffect(() => {
+  //   //when connecting for the first time
+  //   //we need to send the username
+  //   const msgi = JSON.parse(localStorage.getItem('message'))
+  //   console.log("hi", msgi);
+  //   setMsg(msgi)
+  //   onmessage(msgi)
+
+  // }, [msg])
+  window.addEventListener("storage", function (event) {
+    // Check the event properties
+    if (event.key === "message") {
+      const msgi = JSON.parse(localStorage.getItem("message"));
+      console.log("hi", msgi);
+      setMsg(msgi);
+      onmessage(msgi);
+    }
+  });
+
+  const onmessage = async (msg) => {
+    if (msg.type === "id") {
+      console.log("ws connected");
+      var newname = {
+        type: "admindetails",
+        name: "admin",
+        id: msg.id,
+        admin: "1234", //admin id
+      };
+      ws.send(JSON.stringify(newname));
+    }
+
+    //user list
+    if (msg.type === "exam") {
+      console.log("user list");
+      if (msg.students.length === 0) {
+        console.log("NO EXAMS ARE LIVE");
+        return;
+      }
+    }
+    //new student added
+    if (msg.type === "add") {
+      console.log("add student");
+      last_index++;
+      msg.index = last_index;
+
+      live_students[msg.sid] = {
+        rtc: new webrtc(msg),
+      };
+      console.log(live_students[msg.sid]);
+    }
+
+    //student deleted
+    if (msg.type === "del") {
+      console.log("delete student");
+      last_index--;
+      delete live_students[msg.sid];
+    }
+    //webrtc offer
+    if (msg.type === "offer") {
+      console.log("offer received");
+      let student_connection = live_students[msg.sid];
+      student_connection.rtc.handleOffer(msg);
+    }
+
+    //new ice candidate received
+    if (msg.type === "new-ice-candidate") {
+      console.log("new ice candidate:");
+      let student_connection = live_students[msg.sid];
+      console.log(student_connection);
+      await student_connection.rtc.handleNewICECandidateMsg(msg);
+    }
+  };
+  const config = {
+    iceServers: [
+      {
+        urls: "turn:124.64.206.224:8800",
+        username: "webrtc",
+        credential: "turnserver",
+      },
+    ],
+  };
+  class webrtc {
+    constructor(message) {
+      console.log(message);
+      this.exam = message.exam;
+      this.id = message.sid;
+      this.index = message.index;
+      this.rc = new RTCPeerConnection(config);
+      this.rc.ondatachannel = this.handleDataChannel.bind(this);
+      this.rc.ontrack = this.handleTrackEvent.bind(this);
+      this.rc.onicecandidate = this.handleICECandidateEvent.bind(this);
+    }
+
+    sendToServer(data) {
+      data = JSON.stringify(data);
+      ws.send(data);
+    }
+    handleDataChannel(evt) {
+      this.rc.channel = evt.channel;
+      this.rc.channel.onopen = () => console.log("channel is open...");
+      this.rc.channel.onclose = () => console.log("channel is closed...");
+      this.rc.channel.onmessage = (msg) =>
+        console.log("channel message:" + msg.data);
+    }
+    handleTrackEvent(evt) {
+      console.log("track");
+      videoref.current.srcObject = evt;
+    }
+
+    handleICECandidateEvent(event) {
+      if (event.candidate) {
+        console.log("*** Outgoing ICE candidate: " + event.candidate.candidate);
+        this.sendToServer({
+          type: "new-ice-candidate",
+          target: this.id,
+          to: "student",
+          exam: this.exam,
+          candidate: event.candidate,
+          from: "admin",
+        });
+      }
+    }
+
+    async handleOffer(msg) {
+      let sdp = msg.sdp;
+      let desc = new RTCSessionDescription(sdp);
+      await this.rc.setRemoteDescription(desc);
+      await this.rc.setLocalDescription(await this.rc.createAnswer());
+      this.sendToServer({
+        name: "admin",
+        target: this.id,
+        exam: this.exam,
+        type: "answer",
+        sdp: this.rc.localDescription,
+      });
+    }
+
+    async handleNewICECandidateMsg(msg) {
+      var candidate = new RTCIceCandidate(msg.candidate);
+      console.log(
+        "*** Adding received ICE candidate: " + JSON.stringify(candidate)
+      );
+      try {
+        await this.rc.addIceCandidate(candidate);
+      } catch (err) {
+        console.log("err:" + err);
+      }
+    }
+  }
+  console.log("hi from exam:", ws);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
@@ -105,6 +266,7 @@ const Exam = () => {
             borderRadius="4px"
             sx={{
               cursor: "pointer",
+              cursor: "pointer",
             }}
             onClick={handleClickOpen}
           >
@@ -134,6 +296,7 @@ const Exam = () => {
             borderRadius="4px"
             sx={{
               cursor: "pointer",
+              cursor: "pointer",
             }}
             onClick={handleClickOpen}
           >
@@ -162,6 +325,7 @@ const Exam = () => {
             backgroundColor={colors.greenAccent[600]}
             borderRadius="4px"
             sx={{
+              cursor: "pointer",
               cursor: "pointer",
             }}
             onClick={handleClickOpen}
@@ -208,6 +372,7 @@ const Exam = () => {
         </BootstrapDialog>
       </div>
       <Header title="Exam" subtitle="Live exam monitoring" />
+      {/* <video ref={videoref} autoPlay srcObject={videoref.current}  playsInline controls/> */}
       <Box
         m="-10px 0 0 0"
         height="75vh"
